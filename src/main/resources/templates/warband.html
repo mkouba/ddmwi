@@ -1,0 +1,155 @@
+{#include base}
+{#title}Warband - {warband.name ?: 'New'}
+{#content}
+
+{#errorMessages messages=errorMessages /}
+
+<form method="post" class="warband-details">
+    <div class="row g-3 align-items-center">
+      <div class="col-auto">
+       <label for="inputName" class="col-form-label">Name</label>
+      </div>
+      <div class="col-auto">
+        <input type="text" id="inputName" class="form-control" name="name" value="{warband.name}">
+      </div>
+      <div class="col-auto">
+        <input type="checkbox" class="form-check-input" id="inputPublicLink" name="publicLink" value="true"{#if warband.publicLink} checked{/if}>
+        &nbsp;<label class="form-check-label" for="inputPublicLink">Public&nbsp;{#if warband.publicLink}<a href="/warband-link/{warband.id}" target="_blank">link <i class="fas fa-external-link-alt"></i></a>{#else}link{/if}</label>
+      </div>
+      <div class="col-auto">
+        <input type="checkbox" class="form-check-input" id="inputArena" name="arena" value="true" aria-describedby="arenaHelp"{#if warband.arena} checked{/if}>
+        <label class="form-check-label" for="inputArena">Arena</label>
+        <span id="arenaHelp" class="form-text">&nbsp;(warband may contain a maximum of 5 creatures)</span>
+      </div>
+      <div class="col-auto">
+       <label for="inputPointLimit" class="col-form-label">Point limit</label>
+      </div>
+      <div class="col-auto">
+        <select id="inputPointLimit" name="pointLimit" class="form-select" aria-describedby="addon-point">
+        {#each PointLimit:values}
+            <option value="{it}"{#if warband.pointLimit is it}selected{/}>{it} ({it.value} points/{it.numberOfCreatures} creatures)</option>  
+        {/each}
+        </select>
+      </div>
+      {#if !warband.id or warband.freestyle}
+      <div class="col-auto">
+        <input type="checkbox" class="form-check-input" id="inputFreestyle" name="freestyle" value="true"{#if warband.freestyle} checked{/if} {#if warband.id} disabled{/if}>
+        <label class="form-check-label" for="inputFreestyle">Freestyle</label>
+        <span id="arenaHelp" class="form-text">&nbsp;(does not impose any rules and restrictions)</span>
+      </div>
+      {/if}
+    </div>
+    <div class="row g-3 mt-1 align-items-center">
+        <div class="col-8">
+            <textarea class="form-control" placeholder="Notes (max {warband:noteLimit} characters)" maxlength="{warband:noteLimit}" rows="3" name="note">{warband.note}</textarea>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-secondary">Save</button>
+            {#if warband.id}
+            <a class="btn btn-secondary" href="/warbands/export/{warband.id}" role="button" title="Export this warband to a JSON file"><i class="fas fa-file-export"></i> Export</a>
+            {/if}
+        </div>
+    </div>
+</form>
+    
+{#if warband.id}
+<div class="row warband-details">
+    <div class="col-1 warband-attrs">
+    <table class="table table-borderless table-striped">
+        <tr>
+            <td class="text-center stat">FACTIONS<br>{#factions warband.baseFactions /}</td>
+        </tr>
+        <tr>
+            <td class="text-center stat">ALIGNMENT<br>{#alignment warband.alignment alwaysVisible=true /}</td>
+        </tr>
+        <tr>
+            <td class="text-center stat">TOTAL HP<br>{warband.totalHp}</td>
+        </tr>
+        <tr>
+            <td class="text-center stat">HIGHEST LEVEL<br>{warband.highestLevel}</td>
+        </tr>
+        <tr>
+            <td class="text-center stat">CHAMPION RATING<br>{warband.championRating}</td>
+        </tr>
+    </table>
+    </div>
+    <div class="col-11 warband-cards">
+    <div class="progress" style="height:2.5rem;font-size:1.6rem;">
+        {#if warband.freestyle}
+        <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" title="{warband.totalCost} points used">
+          {warband.totalCost}
+        </div>
+        {#else}
+        <div class="progress-bar bg-danger" role="progressbar" style="width: {warband.pointsLimitPercentage}%" aria-valuenow="{warband.pointsLimitPercentage}" aria-valuemin="0" aria-valuemax="100" title="{warband.totalCost} points used from the limit {warband.pointLimit.value}">
+          {warband.totalCost}
+        </div>
+        <div class="progress-bar bg-secondary bg-opacity-50" role="progressbar" style="width: {warband.pointsRemainingPercentage}%" aria-valuenow="{warband.pointsRemainingPercentage}" aria-valuemin="0" aria-valuemax="100" title="{warband.remainingPoints} points remaining">
+          {warband.remainingPoints}
+        </div>
+        {/if}
+    </div>
+    {#if warband.creatures}
+    <div class="row row-cols-auto mb-2">
+        {#each warband.creatures}
+            {#creatureCard creature=it creatureIndex=it_index warbandSelected=true /}
+        {/each}
+    </div>
+    {#else}
+    <div class="text-center text-muted fs-3 no-creatures-text">No creatures added yet. Please select a creature below...</div>
+    {/if}
+    </div>
+</div>
+{/if}
+
+{#if warband.id}
+<h2>Available creatures</h2>
+
+{#filters quickFilters=creature:quickFilters hxTarget="#warband-available-creatures" hxGet=warband:availableCreaturesPath(warband.id) /}
+
+<div id="warband-available-creatures">
+  {#creatureCards hxTarget="#warband-available-creatures" hxGet=warband:availableCreaturesPath(warband.id) /}
+</div>
+
+{/if}
+
+{#script}
+const buttonClear = document.querySelector("#buttonClear");
+const queryInput = document.querySelector("#inputFilter");
+
+if (buttonClear) {
+   buttonClear.addEventListener('click', clearQuery); 
+}
+
+function clearQuery() {
+   queryInput.value = '';
+}
+
+function appendToQuery(val) {
+    queryInput.value = queryInput.value + ' ' + val;
+}
+
+function toggleCollection(creatureId) {
+    fetch('/creature-list/toggle-collection/' + creatureId, {
+        method: 'POST',
+        cache: 'no-cache',
+        credentials: 'same-origin',
+        })
+    .then(function(response) {
+        const toggle = document.querySelector('#toggle_' + creatureId);
+        const toggleButton = document.querySelector('#toggle-btn_' + creatureId);
+        if (response.status === 200 && toggle && toggleButton) {
+            if (toggle.className.indexOf("fa-toggle-on") != -1) {
+                toggle.className = "fas fa-toggle-off";
+                toggleButton.className = "btn btn-outline-secondary";
+            } else {
+                toggle.className = "fas fa-toggle-on";
+                toggleButton.className = "btn btn-secondary";
+            }    
+        } else {
+            alert('Unable to toggle collection for creature: ' + creatureId);
+            console.log(response);
+        }
+    });
+}
+
+{/include}

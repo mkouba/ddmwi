@@ -1,0 +1,54 @@
+{! params: quickFilters, hxTarget, hxGet, sortInfo !}
+
+<div class="filter" style="margin-top:1em;">
+    <div class="input-group mb-3">
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+            Quick filters
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+              {#each quickFilters.orEmpty}
+              <li><button class="dropdown-item quick-filter-button" type="button" onclick="appendToQuery('{it.value.raw}')">{it.key}</button></li>
+              {/each}
+            </ul>
+        </div>
+        <input type="text" 
+            class="form-control input-filter" 
+            id="inputFilter" 
+            name="q"
+            value="{query}"
+            hx-get="{hxGet}"
+            hx-trigger="change,click from:.quick-filter-button"
+            hx-target="{hxTarget}"
+            hx-include="[name='sortBy']">
+        
+        <button class="btn btn-secondary" 
+            type="button" 
+            id="buttonFilter" 
+            title="Apply filters"
+            hx-get="{hxGet}"
+            hx-target="{hxTarget}"
+            hx-include="[name='q'],[name='sortBy']">
+            <i class="fas fa-check"></i>
+        </button>
+        <button class="btn btn-secondary" 
+            type="button" 
+            id="buttonClear" 
+            title="Clear filters"
+            hx-get="{hxGet}"
+            hx-target="{hxTarget}"
+            hx-include="[name='q'],[name='sortBy']">
+          <i class="fas fa-times"></i>
+        </button>
+        <span class="input-group-text">Sort by</span>
+        <select name="sortBy" 
+            class="form-select input-filter"
+            hx-get="{hxGet}"
+            hx-target="{hxTarget}"
+            hx-include="[name='q']">
+            {#each sortInfo.options}
+                <option value="{it.value}"{#if sortInfo.selected is it.value}selected{/}>{it.key}</option>  
+            {/each}
+        </select>
+    </div>
+</div>

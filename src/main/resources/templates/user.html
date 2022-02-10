@@ -1,0 +1,35 @@
+{#include base}
+{#title}User - {user.username ?: 'New'}
+{#content}
+
+{#errorMessages messages=errorMessages /}
+
+<form method="post">
+    <div class="mb-3">
+        <label for="inputName" class="col-form-label">Username</label>
+        <input type="text" id="inputName" class="form-control" name="username" value="{user.username}">
+    </div>
+    <div class="mb-3">
+        <label for="inputRoles" class="col-form-label">Roles</label>
+        <select id="inputRoles" name="roles" class="form-select" multiple aria-label="multiple select example">
+            {#each Role:values}
+            <option value="{it}" {#if user.roles.contains(it).or(false)}selected{/}>{it.strValue}</option>
+            {/each}
+        </select>
+    </div>
+    <div class="mb-3">
+        <input type="checkbox" class="form-check-input" id="inputIsActive" name="active" value="true" {#if user.active}
+            checked{/if}{#if user.isAdmin} disabled{/if}>
+        <label class="form-check-label" for="inputIsActive">Active</label>
+    </div>
+    <div class="mb-3">
+        <label for="inputPassword" class="col-form-label">New password</label>
+        <input type="password" id="inputPassword" class="form-control" name="password" value="">
+    </div>
+    <div class="mb-3">
+        <button type="submit" class="btn btn-secondary">Save</button>
+    </div>
+    </div>
+</form>
+
+{/include}

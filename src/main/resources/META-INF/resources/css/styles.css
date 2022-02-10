@@ -1,0 +1,279 @@
+body {
+  font-family: 'Merriweather Sans', sans-serif;
+}
+
+h2 {
+  font-size: 1.3rem;
+}
+
+h3 {
+  font-size: 1rem;
+}
+
+.main-container {
+  margin-top: 2em;
+  margin-bottom: 4em;
+  padding-left: 2em;
+  padding-right: 2em;
+}
+
+div.filter {
+  margin-bottom: 1em;
+}
+
+.cardFloatLeft {
+  margin: 0 0.5rem 0 0;
+  float: left;
+}
+
+.cardFloatRight {
+  margin: 0;
+  float: right;
+}
+
+p.keywords , ul.powers {
+  margin-top: 0.2rem;
+  margin-bottom: 0;
+  font-size: 0.9rem;
+  padding-left: 1rem;
+}
+
+td.stat {
+  border-radius: 3px;
+  font-size: 0.9rem;
+}
+
+p.factions {
+  margin-bottom: 0.5rem;  
+}
+
+.creature-card {
+  width: 18rem;
+  background-image: url("/img/dragon.png");
+  background-repeat: no-repeat;
+}
+
+.card-header {
+  font-size: 1.1em;
+}
+
+.card-header .level {
+  color: gray;
+  font-size:0.9rem;
+}
+
+.card-body {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    /*font-size: .9rem;*/
+    max-width: 20rem;
+}
+
+.card-body table {
+  margin:0;
+}
+
+.card-footer {
+  font-size: 1.5em;
+}
+
+.card-footer .btn {
+  font-size: 1rem;
+}
+
+.power-card {
+  padding: 0.5rem;
+  padding-top: 1rem;
+  margin-bottom: 0.1rem;
+}
+
+.power-btn-group {
+  margin-bottom: 0.1rem;
+}
+
+.power-card::before {
+  position: absolute;
+  top: 0;
+  right: 10px;
+  color: silver;
+  font-size: 0.8rem;
+}
+
+.set-power-card::before {
+  content: "SET";
+}
+
+.attacks-power-card::before {
+  content: "ATTACKS";
+}
+
+.powers-power-card::before {
+  content: "POWERS";
+}
+
+.champs-power-card::before {
+  content: "CHAMPION";
+}
+
+.creatures-power-card::before {
+  content: "CREATURES";
+}
+
+.cost-power-card::before {
+  content: "COST";
+}
+
+.factions-power-card::before {
+  content: "FACTIONS";
+}
+
+.accordion-list {
+    padding-left: 1rem;
+}
+
+
+.warband-attrs {
+  font-size: 0.9rem;
+  padding: 1rem;
+  /*background-color: rgb(222, 226, 230);*/
+  border-radius: 6px 0px 0px 6px;
+}
+
+.warband-cards {
+    /*background-color: rgb(222, 226, 230);*/
+    border-radius: 0px 6px 6px 0px;
+    padding: 1rem;
+}
+
+.warband-details {
+    margin-bottom: 2rem;
+}
+
+.warband-attr-value {
+  color: silver;
+}
+
+.no-creatures-text {
+    position: relative;
+    top: 50%;
+}
+
+code {
+  padding: .2em .4em;
+  margin: 0;
+  font-size: 85%;
+  background-color: silver;
+  color:black;
+  border-radius: 6px;
+}
+
+legend {
+  float: none; 
+  padding: inherit;
+}
+
+.input-filter {
+  word-spacing: 4px;
+}
+
+tr {
+  vertical-align: middle;
+}
+
+div.col {
+    margin-top: 1em;
+}
+
+.bg-borderlands {
+    background-color: #b51c22;
+    padding: .35em;
+}
+
+.bg-underdark {
+    background-color: #8045a7;
+    padding: .35em;
+}
+
+.bg-civilization {
+    background-color: #4773c1;
+    padding: .35em;
+}
+
+.bg-wild {
+    background-color: #47bb40;
+    padding: .35em;
+}
+
+.bg-evil {
+    background: linear-gradient(to right, black 55%, rgba(0,0,0,.03));
+    padding: .35em;
+}
+
+.bg-good {
+    padding: .35em;
+    background: linear-gradient(to left, silver 5%, white);
+}
+
+.bg-neutral {
+    background: linear-gradient(to left, silver 35%, #404448);
+    padding: .35em;
+}
+
+.bg-cost {
+    background-color: #161a1e;
+}
+
+.bg-champ {
+  background-color: #5d3c8b;
+  padding: .35em;
+}
+
+.bg-nav-dropdown {
+  background-color: #16191b;
+  border-left-color: #16191b;
+}
+
+.bg-dropdown-btn {
+    background-color: #1c1f23;
+    border-left-width: 0;
+}
+
+.page-item.active .page-link {
+  z-index: 3;
+  color: white;
+  background-color: #1c1f23;
+  border-color: #1c1f23;
+}
+
+.page-link { 
+  cursor: pointer;
+}
+
+.progress {
+  font-size: 0.9rem;
+}
+
+textarea.form-control {
+  line-height: 1.5em;
+  min-height: 1.5em;
+}
+
+@media print {
+  body {
+    font-size: 11px;
+  }
+  h3 {
+    font-size: 13px;
+    margin: 0;
+  }
+  p.keywords , ul.powers {
+    font-size: 10px;
+  }
+  hr {
+    margin-top: 3px;
+    margin-bottom: 3px;
+  }
+  div.card {
+    page-break-inside: avoid;
+  }
+}

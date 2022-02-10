@@ -1,0 +1,148 @@
+{#include base}
+{#title}Creature - {creature.name ?: 'New'}
+{#content}
+
+{#errorMessages messages=errorMessages /}
+
+<form method="post" class="row g-3">
+  <div class="col-md-3">
+    <label for="inputName" class="form-label">Name</label>
+    <input type="text" class="form-control" id="inputName" name="name" value="{creature.name}">
+  </div>
+  <div class="col-md-3">
+    <label for="inputAlignment" class="form-label">Alignment</label>
+    <select id="inputAlignment" name="alignment" class="form-select">
+    {#each Alignment:values}
+        <option value="{it}"{#if creature.alignment is it}selected{/}>{it}</option>  
+    {/each}
+    </select>
+  </div>
+  <div class="col-md-3">
+    <label for="inputLevel" class="form-label">Level</label>
+    <input type="text" class="form-control" id="inputLevel" name="level" value="{creature.level}">
+  </div>
+  <div class="col-md-3">
+    <label for="inputSetInfo" class="form-label">Set</label>
+    <input type="text" class="form-control" id="inputSetInfo" name="setInfo" value="{creature.setInfo}">
+  </div>
+  <div class="col-md-3">
+    <label for="inputChamp" class="form-label">Champion Rating</label>
+    <input type="text" class="form-control" id="inputChamp" name="champ" value="{creature.championRating}">
+  </div>
+  <div class="col-md-3">
+    <label for="inputCost" class="form-label">Cost</label>
+    <input type="text" class="form-control" id="inputCost" name="cost" value="{creature.cost}">
+  </div>
+  <div class="col-md-3">
+    <label for="inputHp" class="form-label">HP</label>
+    <input type="text" class="form-control" id="inputHp" name="hp" value="{creature.hp}">
+  </div>
+  <div class="col-md-3">
+    <label for="inputSpeed" class="form-label">Speed</label>
+    <input type="text" class="form-control" id="inputSpeed" name="speed" value="{creature.speed}">
+  </div>
+  <div class="col-md-3">
+    <label for="inputMovement" class="form-label">Movement mode</label>
+    <select id="inputMovement" name="movementMode" class="form-select">
+    {#each MovementMode:values}
+        <option value="{it}"{#if creature.movementMode is it}selected{/}>{it}</option>  
+    {/each}
+    </select>
+  </div>
+  <div class="col-md-12">
+    <label for="inputKeywords" class="form-label">Keywords</label>
+    <input type="text" class="form-control" id="inputKeywords" name="keywords" value="{creature.keywords}">
+  </div>
+  <div class="col-md-3">
+    <label for="inputAc" class="form-label">AC</label>
+    <input type="text" class="form-control" id="inputAc" name="ac" value="{creature.ac}">
+  </div>
+  <div class="col-md-3">
+    <label for="inputFort" class="form-label">FORT</label>
+    <input type="text" class="form-control" id="inputFort" name="fort" value="{creature.fort}">
+  </div>
+  <div class="col-md-3">
+    <label for="inputRef" class="form-label">REF</label>
+    <input type="text" class="form-control" id="inputRef" name="ref" value="{creature.ref}">
+  </div>
+  <div class="col-md-3">
+    <label for="inputWill" class="form-label">WILL</label>
+    <input type="text" class="form-control" id="inputWill" name="will" value="{creature.will}">
+  </div>
+  <div class="col-md-6">
+    <label for="inputFactions" class="form-label">Factions</label>
+    <select id="inputFactions" name="factions" class="form-select" multiple aria-label="multiple select example">
+    {#each Faction:values}
+        <option value="{it}"{#if creature.factions.contains(it).or(false)}selected{/}>{it}</option>
+    {/each}
+    </select>
+  </div>
+  <div class="col-12">
+    <button type="submit" class="btn btn-secondary">Save</button>
+    <button type="submit" class="btn btn-danger" formaction="/creature-detail/{creature.id}/delete">Delete</button>
+  </div>
+</form>
+
+<hr/>
+
+<h2>Powers</h2>
+
+{#for power in creature.powers}
+<div>
+  <form method="post" action="/creature-detail/{creature.id}/update-power/{power.id}">
+    <div class="row g-3 align-items-center">
+      <div class="col-auto">
+        <label for="power_type_{power_index}" class="form-label">Type</label>
+        <select id="power_type_{power_index}" name="type" class="form-select">
+        {#each PowerType:values}
+        <option value="{it}"{#if it is power.type} selected{/if}>{it}</option>
+        {/each}
+        </select>
+      </div>
+      <div class="col-md-6">
+        <textarea class="form-control" id="power_text_{power_index}" rows="2" name="text">{power.text}</textarea>
+      </div>
+      <div class="col-md-2">
+        <label for="power_limit_{power_index}" class="form-label">Limit</label>
+        <input type="number" class="form-control" id="power_limit_{power_index}" name="limit" value="{power.usageLimit}">
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-secondary">Update</button>
+        <button type="submit" class="btn btn-danger" formaction="/creature-detail/{creature.id}/delete-power/{power.id}">Delete</button>
+      </div>
+    </div>
+  </form>
+</div>
+{#else}
+<p>No powers available.</p>
+{/for}
+
+<hr>
+
+<h2>Add new power</h2>
+
+<div>
+  <form method="post" action="/creature-detail/{creature.id}/add-power">
+    <div class="col-auto">
+        <label for="inputType" class="form-label">Type</label>
+        <select id="inputType" name="type" class="form-select">
+        {#each PowerType:values}
+        <option value="{it}">{it}</option>
+        {/each}
+        </select>
+    </div>
+    <div class="col-auto">
+        <label for="inputText" class="form-label">Text</label>
+        <textarea class="form-control" id="inputText" rows="2" name="text"></textarea>
+    </div>
+    <div class="col-auto">
+        <label for="inputLimit" class="form-label">Limit</label>
+        <input type="number" class="form-control" id="inputLimit" name="limit">
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-secondary">Add</button>
+    </div>
+  </form>
+</div>
+
+{/include} 

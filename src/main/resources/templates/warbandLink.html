@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans&display=swap" rel="stylesheet">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/fontawesome/all.min.css" rel="stylesheet">
+    <link href="/css/styles.css" rel="stylesheet">
+    <title>D&D Minis Warband Incubator - {warband.name}</title>
+</head>
+<body>
+
+    <div class="container-fluid main-container">
+        <h1><a href="/" title="{app:version}" style="text-decoration:none;"><i class="fa fa-dice-d20"></i> &nbsp; Warband - {warband.name}</a></h1>
+
+        <div class="row row-cols-auto">
+         <div class="col">
+        <div class="card">
+            <div class="card-header">
+                Warband stats
+            </div>
+            <div class="card-body">
+                <div class="row">
+                        <table class="table table-borderless table-striped">
+            <tr>
+                <td>Creatures</td>
+                <td>{#each warband.creatures.size}&nbsp;<i class="fas fa-circle fa-xs"></i>{/each}</td>
+            </tr>
+            <tr>
+                <td>Factions</td>
+                <td>{#factions warband.baseFactions /}</td>
+            </tr>
+            <tr>
+                <td>Alignment</td>
+                <td>{warband.alignment}</td>
+            </tr>
+            <tr>
+                <td>Total hit points</td>
+                <td>{warband.totalHp}</td>
+            </tr>
+            <tr>
+                <td>Highest level</td>
+                <td>{warband.highestLevel}</td>
+            </tr>
+            <tr>
+                <td>Champion rating</td>
+                <td>{warband.championRating}</td>
+            </tr>
+            <tr>
+                <td>Point limit</td>
+                <td>{warband.pointLimit} ({warband.pointLimit.value})</td>
+            </tr>
+            <tr>
+                <td>Arena</td>
+                <td><input type="checkbox" name="isArena" disabled{#if warband.arena} checked{/if}></td>
+            </tr>
+            <tr>
+                <td>Cost / Remaining</td>
+                <td>{warband.totalCost}/{warband.remainingPoints}</td>
+            </tr>
+        </table>
+                </div>
+            </div>
+        </div>
+        
+         </div> 
+    {#for creature in warband.creatures}
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <div>
+                {#if creature.name.length > 20}
+                <span title="{creature.name}">{creature.name.substring(0,20)}...</span>
+                {#else}
+                {creature.name}
+                {/if}
+                <div class="float-end">
+                    {#alignment creature.alignment /}
+                </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-3">
+                      <table class="table table-sm table-borderless table-striped w-25">
+                        <tr>
+                            <td class="text-center">Level<br>{creature.level}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">HP<br>{creature.hp}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">Speed<br>{creature.speed} {#if creature.isFlying}&nbsp;<span title="Flying"><i class="fas fa-feather"></i></span>{/if}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">AC<br>{creature.ac}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">FORT<br>{creature.fort}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">REF<br>{creature.ref}</td class="text-center">
+                        </tr>
+                        <tr>
+                            <td class="text-center">WILL<br>{creature.will}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">{#each creature.factions}<div class="mt-1">{#faction it /}</div>{/each}</td>
+                        </tr>
+                        
+                    </table>
+                    </div>
+                    <div class="col-9">
+                    <h3>Keywords</h3>
+                    <p class="keywords">{#each creature.keywordsList}{it}{#if it_hasNext}, {/if}{/each}</p>
+                     <hr>
+                    <h3>Attacks</h3>
+                    <ul class="powers">
+                            {#each creature.attacks}
+                            <li>{#creaturePowerLimit limit=it.usageLimit /}{it.text}</li>
+                            {#else}
+                            <li>No attacks</li>
+                            {/each}
+                    </ul>
+                    <hr>
+                    <h3>General powers</h3>
+                    <ul class="powers">
+                            {#each creature.generalPowers}
+                            <li>{#creaturePowerLimit limit=it.usageLimit /}{it.text}</li>
+                            {#else}
+                            <li>No general powers</li>
+                            {/each}
+                    </ul>
+                    {#if creature.isChampion}
+                    <hr>
+                    <h3>Champion powers</h3>
+                    <ul class="powers">
+                            {#each creature.championPowers}
+                            <li>{it.text}</li>
+                            {#else}
+                            <li>No champion powers</li>
+                            {/each}
+                    </ul>
+                    {/if}
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer text-muted">
+                 <div class="cardFloatRight">
+                    &nbsp;<span class="badge rounded-pill bg-secondary" title="Cost">{creature.cost}</span>
+                 </div>
+                 <div class="cardFloatRight">
+                    {#champion creature.championRating /}
+                 </div>
+            </div>
+        </div>
+    </div>
+    {/for}
+</div>
+            
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,13 @@
+{#include base}
+{#title}Oops! We Have an Error!
+{#content}
+
+<p class="lead">
+{message ?: 'Something really bad happened! Please contact the administrator.'}
+</p>
+
+{#if signIn}
+<a class="btn btn-outline-secondary" role="button" href="/login">Sign in</a>
+{/if}
+
+{/include}

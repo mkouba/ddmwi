@@ -1,0 +1,105 @@
+{! params: page, query, sortInfo, hxTarget, hxGet !}
+
+{#if page.isEmpty}
+<p>No warbands found. Create a <a href="/warband-detail">new one</a>!</p>
+{#else}
+<p>Found: <strong>{page.count}</strong></p>
+
+<div class="row row-cols-auto mb-2">
+{#for warband in page.results}
+    <div class="col">
+    <div class="card creature-card">
+            <div class="card-header">
+                <div>
+                    {#if warband.name.length > 30}
+                    <span title="{warband.name}">{warband.name.substring(0,30)}...</span>
+                    {#else}
+                    {warband.name}
+                    {/if}
+                    {#alignment warband.alignment /}
+                </div>
+            </div>
+            <div class="card-body">
+                  <div class="row">
+                  <div class="col-12">
+                  <div class="btn-group power-btn-group" role="group">
+                    <a class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" href="#cost_{warband_index}" role="button" aria-expanded="true" aria-controls="cost_{warband_index}" title="Cost">
+                        <i class="fas fa-coins"></i>
+                    </a>
+                    <a class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" href="#factions_{warband_index}" role="button" aria-expanded="true" aria-controls="factions_{warband_index}" title="Factions">
+                        <i class="fas fa-flag"></i>
+                    </a>
+                    <a class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" href="#creatures_{warband_index}" role="button" aria-expanded="false" aria-controls="creatures_{warband_index}" title="Creatures">
+                        <i class="fas fa-dragon"></i> {#each warband.creatures.size}&nbsp;<i class="fas fa-circle fa-xs"></i>{/each}
+                    </a>
+                  </div>
+                  <div class="collapse show" id="cost_{warband_index}">
+                    <div class="card card-body power-card cost-power-card">
+                      {#if warband.freestyle}
+                      <div class="progress mt-2" style="height:1.5rem;">
+                        <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" title="{warband.totalCost} points used">
+                        {warband.totalCost}
+                        </div>
+                      </div>
+                      {#else}
+                      <div class="progress mt-2" style="height:1.5rem;">
+                        <div class="progress-bar bg-danger" role="progressbar" style="width: {warband.pointsLimitPercentage}%" aria-valuenow="{warband.pointsLimitPercentage}" aria-valuemin="0" aria-valuemax="100" title="{warband.totalCost} points used from the limit {warband.pointLimit.value}">
+                        {warband.totalCost}
+                        </div>
+                        <div class="progress-bar bg-secondary bg-opacity-50" role="progressbar" style="width: {warband.pointsRemainingPercentage}%" aria-valuenow="{warband.pointsRemainingPercentage}" aria-valuemin="0" aria-valuemax="100" title="{warband.remainingPoints} points remaining">
+                        {warband.remainingPoints}
+                        </div>
+                      </div>
+                      {/if}
+                    </div>
+                  </div>
+                  <div class="collapse show" id="factions_{warband_index}">
+                    <div class="card card-body power-card factions-power-card">
+                    <div>{#factions warband.baseFactions /}</div>
+                    </div>
+                  </div>
+                  <div class="collapse" id="creatures_{warband_index}">
+                    <div class="card card-body power-card creatures-power-card">
+                        {#if warband.creatures}
+                            {#if !warband.freestyle}
+                            <div class="progress mt-2 mb-2" style="height:1.5rem;" title="Creatures limit: {warband.creaturesLimit}">
+                                <div class="progress-bar bg-info" role="progressbar" style="width: {warband.creaturesLimitPercentage}%" aria-valuenow="{warband.creaturesLimitPercentage}" aria-valuemin="0" aria-valuemax="100" title="{warband.creatures.size} creatures used">
+                                {warband.creatures.size}/{warband.creaturesLimit}
+                                </div>
+                            </div>
+                            {/if}
+                            <ol class="creatures">
+                                {#each warband.creatures}
+                                <li>{it.name} &nbsp;<span class="badge rounded-pill bg-secondary" title="Cost">{it.cost}</span> {#if it.isChampion}{#champion it.championRating style="color:gray;" /} {/if}</li>
+                                {/each}
+                            </ol>
+                            {#else}
+                            <p>No creatures.</p>
+                            {/if}
+                            {#if warband.note}
+                            <p>{warband.note}</p>
+                            {/if}
+                    </div>
+                  </div>
+                  
+                  </div>
+                  </div></div>
+                
+            <div class="card-footer text-muted">
+                <div class="float-start">
+                    <a class="btn btn-sm btn-secondary" href="/warband-detail/{warband.id}" role="button" title="Edit">
+                    <i class="far fa-edit"></i>
+                    </a>
+                </div>
+                <form method="post" class="float-end" style="margin:0;" action="/warband-detail/{warband.id}/delete" class="row g-3">
+                    <button type="submit" class="btn btn-sm btn-secondary" title="Delete"><i class="fa fa-trash"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {/for}
+</div>
+
+{#pages /}
+
+{/if}

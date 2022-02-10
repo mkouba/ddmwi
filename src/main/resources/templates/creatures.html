@@ -1,0 +1,51 @@
+{#include base}
+{#title}Creatures
+{#content}
+
+{#filters quickFilters=creature:quickFilters hxTarget="#creatures" hxGet="/creature-list/page" /}
+
+<div id="creatures">
+  {#creatureCards hxTarget="#creatures" hxGet="/creature-list/page" /}
+</div>
+
+{#script}
+const buttonClear = document.querySelector("#buttonClear");
+const queryInput = document.querySelector("#inputFilter");
+
+if (buttonClear) {
+   buttonClear.addEventListener('click', clearQuery); 
+}
+
+function clearQuery() {
+   queryInput.value = '';
+}
+
+function appendToQuery(val) {
+    queryInput.value = queryInput.value + ' ' + val;
+}
+
+function toggleCollection(creatureId) {
+    fetch('/creature-list/toggle-collection/' + creatureId, {
+        method: 'POST',
+        cache: 'no-cache',
+        credentials: 'same-origin',
+        })
+    .then(function(response) {
+        const toggle = document.querySelector('#toggle_' + creatureId);
+        const toggleButton = document.querySelector('#toggle-btn_' + creatureId);
+        if (response.status === 200 && toggle && toggleButton) {
+            if (toggle.className.indexOf("fa-toggle-on") != -1) {
+                toggle.className = "fas fa-toggle-off";
+                toggleButton.className = "btn btn-outline-secondary";
+            } else {
+                toggle.className = "fas fa-toggle-on";
+                toggleButton.className = "btn btn-secondary";
+            }    
+        } else {
+            alert('Unable to toggle collection for creature: ' + creatureId);
+            console.log(response);
+        }
+    });
+}
+
+{/include}

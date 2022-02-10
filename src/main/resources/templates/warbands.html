@@ -1,0 +1,28 @@
+{#include base}
+{#title}Your warbands <a class="fs-2 text-secondary ms-1" href="/warband-detail" title="New warband"><i class="fas fa-plus-circle"></i></a>
+{#content}
+
+{#filters quickFilters=warband:quickFilters hxGet="/warband-list/page" hxTarget="#warbands" /}
+
+<div id="warbands">
+{#warbandCards hxGet="/warband-list/page" hxTarget="#warbands" /}
+</div>
+
+{#script}
+const buttonClear = document.querySelector("#buttonClear");
+const queryInput = document.querySelector("#inputFilter");
+
+if (buttonClear) {
+   buttonClear.addEventListener('click', clearQuery); 
+}
+
+function clearQuery() {
+   queryInput.value = '';
+}
+
+function appendToQuery(val) {
+queryInput.value = queryInput.value + ' ' + val;
+updateQuery();
+}
+
+{/include}

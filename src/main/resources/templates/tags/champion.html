@@ -1,0 +1,10 @@
+{#if alwaysVisible?? or it > 0}
+&nbsp;
+<span title="Champion rating: {it}"{#if style??}style="{style}"{/if}>
+{#for i in it}
+<i class="fas fa-medal"></i>
+{#else}
+No champion present.
+{/for}
+</span>
+{/if}

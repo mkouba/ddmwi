@@ -1,0 +1,15 @@
+{! params: warband, page, query, sortInfo, hxTarget, hxGet !}
+
+{#if page.isEmpty}
+<p>No creatures found.</p>
+{#else}
+<p>Found: {page.count}</p>
+{/if}
+
+<div class="row row-cols-auto mb-2">
+{#each page.results}
+  {#creatureCard creature=it creatureIndex=it_index /}
+{/each}
+</div>
+
+{#pages /}

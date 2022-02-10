@@ -1,0 +1,52 @@
+{! params: page, query, sortInfo, hxGet, hxTarget !}
+
+
+<nav aria-label="Pages" class="mt-4">
+  <ul class="pagination pagination-sm flex-wrap">
+    {#if page.hasPrevious}
+    <li class="page-item">
+      <a class="page-link"
+            hx-get="{hxGet}"
+            hx-target="{hxTarget}"
+            hx-vals='{"page": {page.prevIndex}}'
+            hx-include="[name='q'],[name='sortBy']">Prev</a>
+    </li>
+    {/if}
+    {#if page.showFirst}
+    <li class="page-item">
+        <a class="page-link"
+            hx-get="{hxGet}"
+            hx-target="{hxTarget}"
+            hx-vals='{"page": 1}'
+            hx-include="[name='q'],[name='sortBy']">1...</a>
+    </li>
+    {/if}
+    {#for pageIdx in page.visiblePages}
+    <li class="page-item{#if pageIdx is page.index} active{/if}">
+    <a class="page-link"
+            hx-get="{hxGet}"
+            hx-target="{hxTarget}"
+            hx-vals='{"page": {pageIdx}}'
+            hx-include="[name='q'],[name='sortBy']">{pageIdx}</a>
+    </li>
+    {/for}
+    {#if page.showLast}
+    <li class="page-item">
+        <a class="page-link"
+            hx-get="{hxGet}"
+            hx-target="{hxTarget}"
+            hx-vals='{"page": {page.totalPages}}'
+            hx-include="[name='q'],[name='sortBy']">...{page.totalPages}</a>
+    </li>
+    {/if}
+    {#if page.hasNext}
+    <li class="page-item">
+        <a class="page-link"
+            hx-get="{hxGet}"
+            hx-target="{hxTarget}"
+            hx-vals='{"page": {page.nextIndex}}'
+            hx-include="[name='q'],[name='sortBy']">Next</a>
+    </li>
+    {/if}
+  </ul>
+</nav>
