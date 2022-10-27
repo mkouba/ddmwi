@@ -28,8 +28,10 @@ import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Uni;
 
 @NonBlocking
-@Path("/creature-detail")
+@Path(CreatureDetail.PATH)
 public class CreatureDetail extends Controller {
+
+    static final String PATH = "/creature-detail";
 
     @Inject
     WarbandDao warbandDao;
@@ -45,7 +47,7 @@ public class CreatureDetail extends Controller {
 
     @POST
     public Uni<RestResponse<Object>> create(@BeanParam CreatureForm form) {
-        URI listUri = uriInfo.getRequestUriBuilder().replacePath("/creature-list").build();
+        URI listUri = uriFrom(CreatureList.PATH);
         Uni<Creature> creature = form.applyTo(new Creature(), false);
         return Panache.withTransaction(() -> creature.call(Creature::persistAndFlush))
                 .onItem().transform(v -> RestResponse.seeOther(listUri))
@@ -69,7 +71,7 @@ public class CreatureDetail extends Controller {
     @Path("{id}")
     public Uni<RestResponse<Object>> update(@RestPath Long id, @BeanParam CreatureForm form, @RestQuery Long warbandId) {
         URI detailUri = warbandId != null
-                ? uriInfo.getRequestUriBuilder().replaceQuery("").replacePath("/warband-detail/" + warbandId).build()
+                ? uriFrom(WarbandDetail.PATH + "/" + warbandId, "")
                 : uriInfo.getRequestUri();
 
         return Panache.withTransaction(() -> creatureDao.findCreature(id)
@@ -91,7 +93,7 @@ public class CreatureDetail extends Controller {
     @POST
     @Path("{id}/delete")
     public Uni<RestResponse<Object>> delete(@RestPath Long id) {
-        URI listUri = uriInfo.getRequestUriBuilder().replacePath("/creature-list").build();
+        URI listUri = uriFrom(CreatureList.PATH);
         return warbandDao.findRelevantWarbands(id)
                 .chain(warbands -> warbands.isEmpty() ? deleteCreature(id, listUri) : cannotDeleteCreature(id));
     }
@@ -99,7 +101,7 @@ public class CreatureDetail extends Controller {
     @POST
     @Path("{creatureId}/add-power")
     public Uni<RestResponse<Object>> addPower(@RestPath Long creatureId, @BeanParam PowerForm form) {
-        URI detailUri = uriInfo.getRequestUriBuilder().replacePath("/creature-detail/" + creatureId).build();
+        URI detailUri = uriFrom(CreatureDetail.PATH + "/" + creatureId);
         return Panache.withTransaction(() -> {
             CreaturePower power = new CreaturePower();
             power.creature = Creature.createDummy(creatureId);
@@ -110,7 +112,7 @@ public class CreatureDetail extends Controller {
     @POST
     @Path("{creatureId}/delete-power/{powerId}")
     public Uni<RestResponse<Object>> deletePower(@RestPath Long creatureId, @RestPath Long powerId) {
-        URI detailUri = uriInfo.getRequestUriBuilder().replacePath("/creature-detail/" + creatureId).build();
+        URI detailUri = uriFrom(CreatureDetail.PATH + "/" + creatureId);
         return Panache.withTransaction(() -> CreaturePower.delete("id = :id and creature.id = :creatureId",
                 Map.of("id", powerId, "creatureId", creatureId))).map((v -> RestResponse.seeOther(detailUri)));
     }
@@ -118,7 +120,7 @@ public class CreatureDetail extends Controller {
     @POST
     @Path("{creatureId}/update-power/{powerId}")
     public Uni<RestResponse<Object>> updatePower(@RestPath Long creatureId, @RestPath Long powerId, @BeanParam PowerForm form) {
-        URI detailUri = uriInfo.getRequestUriBuilder().replacePath("/creature-detail/" + creatureId).build();
+        URI detailUri = uriFrom(CreatureDetail.PATH + "/" + creatureId);
         return Panache.withTransaction(() -> CreaturePower.<CreaturePower> findById(powerId).chain(
                 p -> form.apply(p)))
                 .map((v -> RestResponse.seeOther(detailUri)));

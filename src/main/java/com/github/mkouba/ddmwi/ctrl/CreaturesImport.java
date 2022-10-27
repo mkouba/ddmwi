@@ -23,10 +23,10 @@ import org.jboss.resteasy.reactive.MultipartForm;
 import org.jboss.resteasy.reactive.RestResponse;
 
 import com.github.mkouba.ddmwi.Creature;
-import com.github.mkouba.ddmwi.CreaturePower;
 import com.github.mkouba.ddmwi.Creature.Alignment;
 import com.github.mkouba.ddmwi.Creature.Faction;
 import com.github.mkouba.ddmwi.Creature.MovementMode;
+import com.github.mkouba.ddmwi.CreaturePower;
 
 import io.quarkus.hibernate.reactive.panache.Panache;
 import io.quarkus.qute.TemplateInstance;

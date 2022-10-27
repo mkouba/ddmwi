@@ -27,12 +27,12 @@ import org.jboss.resteasy.reactive.RestResponse.ResponseBuilder;
 
 import com.github.mkouba.ddmwi.Creature;
 import com.github.mkouba.ddmwi.Warband;
-import com.github.mkouba.ddmwi.WarbandCreature;
 import com.github.mkouba.ddmwi.Warband.PointLimit;
+import com.github.mkouba.ddmwi.WarbandCreature;
 import com.github.mkouba.ddmwi.dao.CreatureDao;
+import com.github.mkouba.ddmwi.dao.CreatureDao.CreatureName;
 import com.github.mkouba.ddmwi.dao.WarbandDao;
 import com.github.mkouba.ddmwi.security.UserIdentityProvider;
-import com.github.mkouba.ddmwi.dao.CreatureDao.CreatureName;
 
 import io.quarkus.hibernate.reactive.panache.Panache;
 import io.quarkus.qute.TemplateInstance;

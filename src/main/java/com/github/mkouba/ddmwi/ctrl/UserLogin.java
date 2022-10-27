@@ -8,9 +8,10 @@ import javax.ws.rs.core.MediaType;
 import io.quarkus.qute.TemplateInstance;
 import io.smallrye.common.annotation.NonBlocking;
 
-@NonBlocking
-@Path("/login")
+@Path(UserLogin.PATH)
 public class UserLogin extends Controller {
+
+    static final String PATH = "/login";
 
     @GET
     @Produces(MediaType.TEXT_HTML)

@@ -30,7 +30,7 @@ public class WarbandForm extends Form<Warband> {
 
     @Override
     protected Uni<Warband> apply(Warband warband) {
-        warband.name = Controller.decode(name);
+        warband.name = name;
         warband.arena = arena;
         warband.pointLimit = pointLimit;
         warband.note = note;

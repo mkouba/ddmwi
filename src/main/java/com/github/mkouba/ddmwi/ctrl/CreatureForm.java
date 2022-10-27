@@ -66,8 +66,8 @@ public class CreatureForm extends Form<Creature> {
     public int champ;
 
     protected Uni<Creature> apply(Creature creature) {
-        creature.name = Controller.decode(name);
-        creature.setInfo = Controller.decode(setInfo);
+        creature.name = name;
+        creature.setInfo = setInfo;
         creature.level = level;
         creature.hp = hp;
         creature.speed = speed;

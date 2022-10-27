@@ -19,13 +19,13 @@ import com.github.mkouba.ddmwi.Warband;
 import io.quarkus.hibernate.reactive.panache.Panache;
 import io.quarkus.qute.Qute;
 import io.quarkus.qute.TemplateInstance;
-import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Uni;
 
 @Produces(MediaType.TEXT_HTML)
-@NonBlocking
-@Path("/users")
+@Path(Users.PATH)
 public class Users extends Controller {
+
+    static final String PATH = "/users";
 
     @GET
     public TemplateInstance list() {
@@ -41,7 +41,7 @@ public class Users extends Controller {
     @POST
     @Path("new")
     public Uni<RestResponse<Object>> create(@BeanParam UserForm form) {
-        URI listUri = uriInfo.getRequestUriBuilder().replacePath("/users").build();
+        URI listUri = uriFrom(PATH);
         Uni<User> user = Panache.withTransaction(() -> form.apply(new User()).chain(u -> u.persistAndFlush()));
         return user.onItem().transform(v -> RestResponse.seeOther(listUri))
                 .onFailure()
@@ -62,7 +62,7 @@ public class Users extends Controller {
     @POST
     @Path("{id}")
     public Uni<RestResponse<Object>> update(Long id, @BeanParam UserForm form) {
-        URI listUri = uriInfo.getRequestUriBuilder().replacePath("/users").build();
+        URI listUri = uriFrom(PATH);
         return Panache.withTransaction(() -> User.<User> findById(id)
                 .onItem().ifNotNull().call(form::applyTo))
                 .onItem().ifNotNull().transform(v -> RestResponse.seeOther(listUri))
@@ -79,7 +79,7 @@ public class Users extends Controller {
     @POST
     @Path("{id}/delete")
     public Uni<RestResponse<Object>> delete(Long id) {
-        URI listUri = uriInfo.getRequestUriBuilder().replacePath("/users").build();
+        URI listUri = uriFrom(PATH);
         // Delete collection, warbands and user
         return Panache.withTransaction(() -> Warband.delete("user.id", id).chain(
                 dw -> UserCreature.delete("user.id", id).chain(

@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.github.mkouba.ddmwi.Creature;
-import com.github.mkouba.ddmwi.CreaturePower;
 import com.github.mkouba.ddmwi.CreatureView;
 import com.github.mkouba.ddmwi.User;
 import com.github.mkouba.ddmwi.Warband;
@@ -12,7 +11,6 @@ import com.github.mkouba.ddmwi.dao.PageResults;
 import com.github.mkouba.ddmwi.dao.SortInfo;
 
 import io.quarkus.qute.CheckedTemplate;
-import io.quarkus.qute.TemplateExtension;
 import io.quarkus.qute.TemplateInstance;
 import io.smallrye.mutiny.Uni;
 

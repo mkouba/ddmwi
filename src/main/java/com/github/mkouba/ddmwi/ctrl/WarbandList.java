@@ -22,10 +22,11 @@ import com.github.mkouba.ddmwi.dao.WarbandDao;
 import io.quarkus.qute.TemplateExtension;
 import io.quarkus.qute.TemplateInstance;
 import io.smallrye.mutiny.Uni;
-import io.vertx.core.http.HttpServerResponse;
 
-@Path("/warband-list")
+@Path(WarbandList.PATH)
 public class WarbandList extends Controller {
+
+    static final String PATH = "/warband-list";
 
     static final List<Map.Entry<String, String>> QUICK_FILTERS = List.of(
             Map.entry("Arena warbands", "arena"),
@@ -54,14 +55,13 @@ public class WarbandList extends Controller {
     @GET
     @Path("page")
     @Produces(MediaType.TEXT_HTML)
-    public TemplateInstance page(@RestQuery String q, @RestQuery int page, @RestQuery String sortBy,
-            HttpServerResponse response) {
+    public TemplateInstance page(@RestQuery String q, @RestQuery int page, @RestQuery String sortBy) {
         SortInfo sortInfo = new SortInfo(sortBy, warbandDao.getSortOptions());
         Filters filters = warbandDao.parse(q);
         Uni<PageResults<Warband>> pageResults = warbandDao.findPage(page < 1 ? 0 : page - 1, sortInfo,
                 filters.getWhereClause(),
                 filters.getParameters());
-        setHxPushHeader(response, "/warband-list?q=%s&sortBy=%s&page=%s", q, sortBy, page);
+        setHtmxPush("/warband-list?q=%s&sortBy=%s&page=%s", q, sortBy, page);
         return Tags.warbandCards(pageResults.memoize().indefinitely(), q, sortInfo, "/warband-list/page", "#warbands");
     }
 

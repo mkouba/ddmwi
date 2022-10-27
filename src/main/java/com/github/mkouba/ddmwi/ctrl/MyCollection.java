@@ -73,7 +73,7 @@ public class MyCollection extends Controller {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.TEXT_HTML)
     public Uni<RestResponse<Object>> importCollection(@MultipartForm FileImportForm form) {
-        URI listUri = uriInfo.getRequestUriBuilder().replacePath("/creature-list").build();
+        URI listUri = uriFrom(CreatureList.PATH);
         return importJson(form).map(v -> RestResponse.seeOther(listUri));
     }
 

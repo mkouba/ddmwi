@@ -25,10 +25,11 @@ import io.quarkus.hibernate.reactive.panache.Panache;
 import io.quarkus.qute.TemplateExtension;
 import io.quarkus.qute.TemplateInstance;
 import io.smallrye.mutiny.Uni;
-import io.vertx.core.http.HttpServerResponse;
 
-@Path("/creature-list")
+@Path(CreatureList.PATH)
 public class CreatureList extends Controller {
+
+    static final String PATH = "/creature-list";
 
     static final Logger LOG = Logger.getLogger(CreatureList.class);
 
@@ -65,14 +66,13 @@ public class CreatureList extends Controller {
     @GET
     @Path("page")
     @Produces(MediaType.TEXT_HTML)
-    public TemplateInstance page(@RestQuery String q, @RestQuery int page, @RestQuery String sortBy,
-            HttpServerResponse response) {
+    public TemplateInstance page(@RestQuery String q, @RestQuery int page, @RestQuery String sortBy) {
         SortInfo sortInfo = new SortInfo(sortBy, creatureDao.getSortOptions());
         Filters filters = creatureDao.parse(q);
         Uni<PageResults<? extends CreatureView>> pageResults = creatureDao.findPage(filters, page < 1 ? 0 : page - 1, sortInfo,
                 filters.getWhereClause(),
                 filters.getParameters());
-        setHxPushHeader(response, "/creature-list/?q=%s&sortBy=%s&page=%s", q, sortBy, page);
+        setHtmxPush("/creature-list/?q=%s&sortBy=%s&page=%s", q, sortBy, page);
         return Tags.creatureCards(null,
                 pageResults.memoize().indefinitely(),
                 q, sortInfo, "/creature-list/page", "#creatures");
@@ -95,12 +95,13 @@ public class CreatureList extends Controller {
     static String searchQuery(CreatureView creature) {
         return encode(creature.getName() + " " + (creature.getSetInfo() != null ? creature.getSetInfo() : ""));
     }
-    
+
     @TemplateExtension
     static String filteredText(CreaturePower power) {
         return power.text
                 // base attack
-                .replace("{b}", "<span class=\"fa-stack\" title=\"Basic attack\"><i class=\"far fa-circle fa-stack-2x\"></i><i class=\"fas fa-bolt fa-stack-1x\"></i></span>")
+                .replace("{b}",
+                        "<span class=\"fa-stack\" title=\"Basic attack\"><i class=\"far fa-circle fa-stack-2x\"></i><i class=\"fas fa-bolt fa-stack-1x\"></i></span>")
                 // melee
                 .replace("{m}", "&nbsp;<i class=\"fas fa-bolt fa-lg\" title=\"Melee attack\"></i>")
                 // ranged

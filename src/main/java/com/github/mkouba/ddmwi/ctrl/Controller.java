@@ -1,6 +1,6 @@
 package com.github.mkouba.ddmwi.ctrl;
 
-import java.net.URLDecoder;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -33,6 +33,9 @@ public abstract class Controller {
 
     @Inject
     UriInfo uriInfo;
+
+    @Inject
+    HttpServerResponse response;
 
     @Inject
     Validator validator;
@@ -81,21 +84,26 @@ public abstract class Controller {
         return messages;
     }
 
-    static void setHxPushHeader(HttpServerResponse response, String url, Object... args) {
-        response.putHeader("HX-Push", String.format(url, Arrays.stream(args).map(a -> encode(a.toString())).toArray()));
+    protected void setHtmxPush(String url, Object... args) {
+        response.putHeader("HX-Push", String.format(url, Arrays.stream(args).map(Controller::encode).toArray()));
     }
+    
+    protected URI uriFrom(String path) {
+        return uriInfo.getRequestUriBuilder().replacePath(path).build();
+    }
+    
+    protected URI uriFrom(String path, String query) {
+        return uriInfo.getRequestUriBuilder().replacePath(path).replaceQuery(query).build();
+    }
+
 
     @SuppressWarnings("unchecked")
     static <T> T cast(Object obj) {
         return (T) obj;
     }
 
-    // FIXME https://github.com/quarkusio/quarkus/issues/23055
-    static String decode(String value) {
-        if (value == null) {
-            return "";
-        }
-        return URLDecoder.decode(value, StandardCharsets.UTF_8);
+    static String encode(Object value) {
+        return encode(value.toString());
     }
 
     static String encode(String value) {

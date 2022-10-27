@@ -32,11 +32,12 @@ import io.quarkus.qute.TemplateInstance;
 import io.quarkus.security.identity.CurrentIdentityAssociation;
 import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Uni;
-import io.vertx.core.http.HttpServerResponse;
 
 @NonBlocking
-@Path("/warband-detail")
+@Path(WarbandDetail.PATH)
 public class WarbandDetail extends Controller {
+
+    static final String PATH = "/warband-detail";
 
     @Inject
     WarbandDao warbandDao;
@@ -57,7 +58,7 @@ public class WarbandDetail extends Controller {
 
     @POST
     public Uni<RestResponse<Object>> create(@BeanParam WarbandForm form) {
-        URI listUri = uriInfo.getRequestUriBuilder().replacePath("/warband-list").build();
+        URI listUri = uriFrom(WarbandList.PATH);
         Uni<Warband> warband = form.applyTo(new Warband(), false).chain(
                 w -> identity.getDeferredIdentity().chain(
                         i -> Panache.withTransaction(
@@ -91,12 +92,12 @@ public class WarbandDetail extends Controller {
     @GET
     @Path("{id}/available-creatures")
     @Produces(MediaType.TEXT_HTML)
-    public Uni<TemplateInstance> availableCreatures(Long id, @RestQuery String q, @RestQuery int page, @RestQuery String sortBy,
-            HttpServerResponse response) {
+    public Uni<TemplateInstance> availableCreatures(Long id, @RestQuery String q, @RestQuery int page,
+            @RestQuery String sortBy) {
         SortInfo sortInfo = new SortInfo(sortBy, creatureDao.getSortOptions());
         return warbandDao.findWarband(id)
                 .onItem().transform(w -> {
-                    setHxPushHeader(response, "/warband-detail/%s?q=%s&sortBy=%s&page=%s", id, q, sortBy, page);
+                    setHtmxPush("/warband-detail/%s?q=%s&sortBy=%s&page=%s", id, q, sortBy, page);
                     return Tags.creatureCards(w,
                             warbandDao.findWarbandCreatures(w, creatureDao.parse(q), page, sortInfo).memoize().indefinitely(),
                             q, sortInfo, "/warband-detail/" + id + "/available-creatures", "#warband-available-creatures");
@@ -139,7 +140,7 @@ public class WarbandDetail extends Controller {
     @POST
     @Path("{id}/add-creature/{creatureId}")
     public Uni<RestResponse<Object>> addCreature(@RestPath Long id, @RestPath Long creatureId, @RestForm String queryStr) {
-        URI requestUri = uriInfo.getRequestUriBuilder().replacePath("/warband-detail/" + id).replaceQuery(queryStr).build();
+        URI requestUri = uriFrom(PATH + "/" + id, queryStr);
         // TODO check user
         return Panache.withTransaction(() -> {
             return creatureDao.findCreature(creatureId).onItem().ifNotNull()
@@ -153,7 +154,7 @@ public class WarbandDetail extends Controller {
     @Path("{id}/remove-creature/{warbandCreatureId}")
     public Uni<RestResponse<Object>> removeCreature(@RestPath Long id, @RestPath Long warbandCreatureId,
             @RestForm String queryStr) {
-        URI requestUri = uriInfo.getRequestUriBuilder().replacePath("/warband-detail/" + id).replaceQuery(queryStr).build();
+        URI requestUri = uriFrom(PATH + "/" + id, queryStr);
         // TODO check user
         return Panache.withTransaction(() -> {
             return warbandDao.findWarband(id).onItem().ifNotNull().invoke(w -> {
@@ -166,7 +167,7 @@ public class WarbandDetail extends Controller {
     @POST
     @Path("{id}/delete")
     public Uni<RestResponse<Object>> delete(@RestPath Long id) {
-        URI listUri = uriInfo.getRequestUriBuilder().replacePath("/warband-list").build();
+        URI listUri = uriFrom(WarbandList.PATH);
         return Panache.withTransaction(() -> Warband.deleteById(id)).map(result -> RestResponse.seeOther(listUri));
     }
 
