@@ -34,7 +34,8 @@ public class UserTrustedIdentityProvider implements IdentityProvider<TrustedAuth
 
     @Override
     public Uni<SecurityIdentity> authenticate(TrustedAuthenticationRequest request, AuthenticationRequestContext context) {
-        return factory.openStatelessSession().chain(s -> findUser(s, request.getPrincipal()).eventually(s::close))
+        return factory.openStatelessSession()
+                .chain(session -> findUser(session, request.getPrincipal()).eventually(session::close))
                 .chain(u -> authenticateUser(request, u));
     }
 
@@ -42,7 +43,7 @@ public class UserTrustedIdentityProvider implements IdentityProvider<TrustedAuth
         return session.<User> createQuery("from User where username = :username").setParameter("username", username)
                 .getResultList().chain(users -> {
                     if (users.isEmpty() || users.size() > 1) {
-                        throw new AuthenticationFailedException();
+                        throw new AuthenticationFailedException("User not found");
                     }
                     return Uni.createFrom().item(users.get(0));
                 });
@@ -50,7 +51,7 @@ public class UserTrustedIdentityProvider implements IdentityProvider<TrustedAuth
 
     private Uni<SecurityIdentity> authenticateUser(TrustedAuthenticationRequest request, User user) {
         if (!user.active) {
-            return null;
+            return Uni.createFrom().failure(new AuthenticationFailedException("User is not active"));
         }
         LOG.debugf("User authenticated [trusted]: %s", request.getPrincipal());
         QuarkusSecurityIdentity.Builder builder = QuarkusSecurityIdentity.builder();

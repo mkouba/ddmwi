@@ -5,10 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.time.Duration;
 import java.util.Set;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
 import com.github.mkouba.ddmwi.User.Role;
@@ -32,12 +30,7 @@ public class UserTest {
                     assertTrue(u.active);
                     assertFalse(u.isAdmin());
                     assertNull(u.lastLogin);
-                });
-    }
-
-    @AfterAll
-    static void delete() {
-        TestData.perform(() -> User.delete("username", "foo")).await().atMost(Duration.ofSeconds(5));
+                }).execute(() -> Panache.withTransaction(() -> User.deleteAll()));
     }
 
     public static User create(String username, String password, Role... roles) {

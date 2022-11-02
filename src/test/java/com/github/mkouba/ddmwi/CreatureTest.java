@@ -2,18 +2,18 @@ package com.github.mkouba.ddmwi;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.time.Duration;
 import java.util.function.Consumer;
 
+import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
-import org.junit.jupiter.api.AfterAll;
+import org.hibernate.reactive.mutiny.Mutiny.SessionFactory;
 import org.junit.jupiter.api.Test;
 
 import com.github.mkouba.ddmwi.Creature.Alignment;
 import com.github.mkouba.ddmwi.Creature.Faction;
-import com.github.mkouba.ddmwi.ctrl.HibernateReactivePanache;
 
+import io.quarkus.hibernate.reactive.panache.Panache;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.vertx.RunOnVertxContext;
 import io.quarkus.test.vertx.UniAsserter;
@@ -21,24 +21,30 @@ import io.quarkus.test.vertx.UniAsserter;
 @QuarkusTest
 public class CreatureTest {
 
+    @Inject
+    SessionFactory sessionFactory;
+
     @RunOnVertxContext
     @Test
     public void testPersist(UniAsserter asserter) {
-        asserter.execute(() -> TestData.performPersist(creature("Angel").good().cost(50).civilization().wild().done()))
+        asserter.execute(() -> Panache
+                .withTransaction(() -> Creature.persist(creature("Angel").good().cost(50).civilization().wild().build())))
                 .assertThat(() -> Creature.<Creature> find("name", "Angel").firstResult(), c -> {
                     assertNotNull(c);
                     assertNotNull(c.id);
-                })
-                // Test unique constraint
-                .assertFailedWith(() -> TestData.performPersist(creature("Angel").evil().cost(150).civilization().done()),
-                        PersistenceException.class)
-                // Always destroy the current session
-                .execute(HibernateReactivePanache::destroySession);
+                }).execute(() -> Creature.deleteAll());
     }
 
-    @AfterAll
-    static void delete() {
-        TestData.perform(() -> Creature.deleteAll()).await().atMost(Duration.ofSeconds(5));
+    @RunOnVertxContext
+    @Test
+    public void testUniqueConstraint(UniAsserter asserter) {
+        asserter.execute(() -> Panache
+                .withTransaction(() -> Creature.persist(creature("Angel").good().cost(50).civilization().wild().build())))
+                .assertFailedWith(
+                        () -> Panache.withTransaction(
+                                () -> Creature.persist(creature("Angel").evil().cost(150).civilization().build())),
+                        PersistenceException.class)
+                .execute(() -> Creature.deleteAll());
     }
 
     public static CreatureBuilder creature(String name) {
@@ -93,7 +99,7 @@ public class CreatureTest {
             return this;
         }
 
-        public Creature done() {
+        public Creature build() {
             return creature;
         }
     }

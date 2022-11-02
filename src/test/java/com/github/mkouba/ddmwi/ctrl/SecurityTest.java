@@ -3,6 +3,9 @@ package com.github.mkouba.ddmwi.ctrl;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+import java.util.function.Function;
+
 import org.junit.jupiter.api.Test;
 
 import io.quarkus.test.junit.QuarkusTest;
@@ -15,27 +18,30 @@ public class SecurityTest extends ControllerTest {
     @RunOnVertxContext
     @Test
     public void testLoginRedirect(UniAsserter asserter) {
-        asserter.execute(() -> executeBlocking(() -> {
-            assertLoginPageRedirect("/creature-list");
-            assertLoginPageRedirect("/creature-detail/1");
-            assertLoginPageRedirect("/warband-list");
-            assertLoginPageRedirect("/warband-detail/1");
-            assertLoginPageRedirect("/creatures/import");
-            assertLoginPageRedirect("/users");
-            assertLoginPageRedirect("/collection/import");
-            assertPageForbidden("/creature-detail/1", "foo", "foo");
+        asserter
+                .execute(() -> persistAll())
+                .execute(() -> executeBlocking(() -> {
+                    assertLoginPageRedirect("/creature-list");
+                    assertLoginPageRedirect("/creature-detail/1");
+                    assertLoginPageRedirect("/warband-list");
+                    assertLoginPageRedirect("/warband-detail/1");
+                    assertLoginPageRedirect("/creatures/import");
+                    assertLoginPageRedirect("/users");
+                    assertLoginPageRedirect("/collection/import");
+                    assertPageForbidden("/creature-detail/1", "foo", "foo");
 
-            String html = given()
-                    .auth()
-                    .form("foo", "foo", formAuthConfig())
-                    .when()
-                    .get("/creature-list")
-                    .then()
-                    .statusCode(200)
-                    .contentType("text/html")
-                    .extract().response().asString();
-            assertTrue(html.contains("<h1>Creatures"), html);
-        }));
+                    String html = given()
+                            .auth()
+                            .form("foo", "foo", formAuthConfig())
+                            .when()
+                            .get("/creature-list")
+                            .then()
+                            .statusCode(200)
+                            .contentType("text/html")
+                            .extract().response().asString();
+                    assertTrue(html.contains("<h1>Creatures"), html);
+                }))
+                .execute(this::deleteAll);
     }
 
     private void assertLoginPageRedirect(String path) {
