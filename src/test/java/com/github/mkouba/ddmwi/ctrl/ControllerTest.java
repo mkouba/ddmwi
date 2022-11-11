@@ -36,7 +36,6 @@ public abstract class ControllerTest {
         all.add((T) foo);
         all.add((T) UserTest.create("admin", "admin", Role.ADMIN));
         this.entities = all;
-        System.out.println(all);
         return Panache.withTransaction(() -> Panache.getSession().chain(s -> s.persistAll(all.toArray())));
     }
 
