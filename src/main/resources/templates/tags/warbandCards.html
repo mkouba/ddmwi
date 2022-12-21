@@ -16,7 +16,6 @@
                     {#else}
                     {warband.name}
                     {/if}
-                    {#alignment warband.alignment /}
                 </div>
             </div>
             <div class="card-body">
@@ -26,10 +25,12 @@
                     <a class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" href="#cost_{warband_index}" role="button" aria-expanded="true" aria-controls="cost_{warband_index}" title="Cost">
                         <i class="fas fa-coins"></i>
                     </a>
-                    <a class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" href="#factions_{warband_index}" role="button" aria-expanded="true" aria-controls="factions_{warband_index}" title="Factions">
-                        <i class="fas fa-flag"></i>
+                    {#if warband.note}
+                    <a class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" href="#note_{warband_index}" role="button" aria-expanded="true" aria-controls="note_{warband_index}" title="Note">
+                        <i class="fas fa-sticky-note"></i>
                     </a>
-                    <a class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" href="#creatures_{warband_index}" role="button" aria-expanded="false" aria-controls="creatures_{warband_index}" title="Creatures">
+                    {/if}
+                    <a class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" href="#creatures_{warband_index}" role="button" aria-expanded="true" aria-controls="creatures_{warband_index}" title="Creatures {warband.creatures.size}/{warband.creaturesLimit}">
                         <i class="fas fa-dragon"></i> {#each warband.creatures.size}&nbsp;<i class="fas fa-circle fa-xs"></i>{/each}
                     </a>
                   </div>
@@ -53,34 +54,41 @@
                       {/if}
                     </div>
                   </div>
-                  <div class="collapse show" id="factions_{warband_index}">
-                    <div class="card card-body power-card factions-power-card">
-                    <div>{#factions warband.baseFactions /}</div>
-                    </div>
-                  </div>
-                  <div class="collapse" id="creatures_{warband_index}">
+                  <div class="collapse show" id="creatures_{warband_index}">
                     <div class="card card-body power-card creatures-power-card">
                         {#if warband.creatures}
                             {#if !warband.freestyle}
-                            <div class="progress mt-2 mb-2" style="height:1.5rem;" title="Creatures limit: {warband.creaturesLimit}">
+                            <!--div class="progress mt-2 mb-2" style="height:1.5rem;" title="Creatures limit: {warband.creaturesLimit}">
                                 <div class="progress-bar bg-info" role="progressbar" style="width: {warband.creaturesLimitPercentage}%" aria-valuenow="{warband.creaturesLimitPercentage}" aria-valuemin="0" aria-valuemax="100" title="{warband.creatures.size} creatures used">
                                 {warband.creatures.size}/{warband.creaturesLimit}
                                 </div>
-                            </div>
+                            </div-->
                             {/if}
                             <ol class="creatures">
                                 {#each warband.creatures}
-                                <li>{it.name} &nbsp;<span class="badge rounded-pill bg-secondary" title="Cost">{it.cost}</span> {#if it.isChampion}{#champion it.championRating style="color:gray;" /} {/if}</li>
+                                <li>
+                                    {it.name} 
+                                    &nbsp;<span class="badge rounded-pill bg-secondary" title="Cost">{it.cost}</span>
+                                    {#if it.isChampion}{#champion it.championRating style="color:gray;" /} {/if}
+                                    {#if it.isEvil}<span class="badge rounded-pill bg-dark">Evil</span>{#else if it.isGood}<span class="badge rounded-pill bg-light text-dark">Good</span>{/if}
+                                    </li>
                                 {/each}
                             </ol>
-                            {#else}
+                            <div>
+                            {#factions warband.baseFactions /}
+                            </div>
+                        {#else}
                             <p>No creatures.</p>
-                            {/if}
-                            {#if warband.note}
-                            <p>{warband.note}</p>
-                            {/if}
+                        {/if}
                     </div>
                   </div>
+                  {#if warband.note}
+                  <div class="collapse" id="note_{warband_index}">
+                    <div class="card card-body power-card note-power-card">
+                    <p>{warband.note}</p>
+                    </div>
+                  </div>
+                  {/if}
                   
                   </div>
                   </div></div>

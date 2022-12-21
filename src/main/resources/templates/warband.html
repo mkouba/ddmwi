@@ -60,7 +60,7 @@
             <td class="text-center stat">FACTIONS<br>{#factions warband.baseFactions /}</td>
         </tr>
         <tr>
-            <td class="text-center stat">ALIGNMENT<br>{#alignment warband.alignment alwaysVisible=true /}</td>
+            <td class="text-center stat">ALIGNMENT<br>{#if warband.isEvil}<span class="badge bg-dark fs-6">Evil</span>{#else if warband.isGood}<span class="badge bg-light text-dark fs-6">Good</span>{#else}<span class="badge bg-secondary fs-6">Neutral</span>{/if}</td>
         </tr>
         <tr>
             <td class="text-center stat">TOTAL HP<br>{warband.totalHp}</td>

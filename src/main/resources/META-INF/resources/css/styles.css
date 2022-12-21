@@ -123,8 +123,8 @@ p.factions {
   content: "COST";
 }
 
-.factions-power-card::before {
-  content: "FACTIONS";
+.note-power-card::before {
+  content: "NOTES";
 }
 
 .accordion-list {

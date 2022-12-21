@@ -82,6 +82,14 @@ public class Warband extends PanacheEntity {
         public final int value;
         public final int numberOfCreatures;
     }
+    
+    public boolean isGood() {
+        return getAlignment() == Alignment.GOOD;
+    }
+    
+    public boolean isEvil() {
+        return getAlignment() == Alignment.EVIL;
+    }
 
     public List<WarbandCreature> creatures() {
         return creatures == null ? Collections.emptyList() : creatures;

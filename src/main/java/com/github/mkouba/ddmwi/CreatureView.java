@@ -112,6 +112,14 @@ public interface CreatureView {
     default boolean isAvailable() {
         return false;
     }
+    
+    default boolean isEvil() {
+        return getAlignment() == Alignment.EVIL;
+    }
+    
+    default boolean isGood() {
+        return getAlignment() == Alignment.GOOD;
+    }
 
     default List<CreaturePower> getChampionPowers() {
         return getPowers().stream().filter(CreaturePower::isChampion).collect(Collectors.toList());
