@@ -12,16 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.reactive.MultipartForm;
 import org.jboss.resteasy.reactive.RestResponse;
 import org.jboss.resteasy.reactive.RestResponse.ResponseBuilder;
 
@@ -42,6 +33,13 @@ import io.smallrye.mutiny.Uni;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.core.Vertx;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
 @Path("/warbands")
 public class MyWarbands extends Controller {
@@ -77,15 +75,15 @@ public class MyWarbands extends Controller {
     @GET
     @Path("/import")
     @Produces(MediaType.TEXT_HTML)
-    public TemplateInstance get() {
-        return Templates.warbandsImport();
+    public Uni<TemplateInstance> get() {
+        return toUni(Templates.warbandsImport());
     }
 
     @POST
     @Path("/import")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.TEXT_HTML)
-    public Uni<RestResponse<Object>> importWarbands(@MultipartForm FileImportForm form) {
+    public Uni<RestResponse<Object>> importWarbands(FileImportForm form) {
         URI listUri = uriInfo.getRequestUriBuilder().replacePath("/warband-list").build();
         return importWarbandsJson(form).map(v -> RestResponse.seeOther(listUri));
     }

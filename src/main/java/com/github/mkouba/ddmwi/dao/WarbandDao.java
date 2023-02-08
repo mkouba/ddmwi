@@ -7,20 +7,17 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import org.hibernate.reactive.mutiny.Mutiny;
 import org.hibernate.reactive.mutiny.Mutiny.Query;
 import org.jboss.logging.Logger;
 
+import com.github.mkouba.ddmwi.Creature.Alignment;
+import com.github.mkouba.ddmwi.Creature.Faction;
 import com.github.mkouba.ddmwi.CreaturePower;
 import com.github.mkouba.ddmwi.CreatureView;
 import com.github.mkouba.ddmwi.Warband;
-import com.github.mkouba.ddmwi.WarbandCreature;
-import com.github.mkouba.ddmwi.Creature.Alignment;
-import com.github.mkouba.ddmwi.Creature.Faction;
 import com.github.mkouba.ddmwi.Warband.PointLimit;
+import com.github.mkouba.ddmwi.WarbandCreature;
 import com.github.mkouba.ddmwi.dao.FilterParser.Operator;
 import com.github.mkouba.ddmwi.security.UserIdentityProvider;
 
@@ -28,6 +25,8 @@ import io.quarkus.hibernate.reactive.panache.Panache;
 import io.quarkus.security.identity.CurrentIdentityAssociation;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Uni;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 @Singleton
 public class WarbandDao {

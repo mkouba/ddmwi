@@ -4,14 +4,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-import javax.ws.rs.BeanParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
 import org.jboss.resteasy.reactive.RestPath;
 import org.jboss.resteasy.reactive.RestQuery;
 import org.jboss.resteasy.reactive.RestResponse;
@@ -26,6 +18,13 @@ import io.quarkus.qute.Qute;
 import io.quarkus.qute.TemplateInstance;
 import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Uni;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.BeanParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
 @NonBlocking
 @Path(CreatureDetail.PATH)
@@ -41,8 +40,8 @@ public class CreatureDetail extends Controller {
 
     @GET
     @Produces(MediaType.TEXT_HTML)
-    public TemplateInstance get() {
-        return Templates.creature(Uni.createFrom().item(new Creature()));
+    public Uni<TemplateInstance> get() {
+        return toUni(Templates.creature(new Creature()));
     }
 
     @POST
@@ -53,18 +52,18 @@ public class CreatureDetail extends Controller {
                 .onItem().transform(v -> RestResponse.seeOther(listUri))
                 .onFailure()
                 .recoverWithUni(t -> {
-                    HibernateReactivePanache.destroySession();
-                    return failureToResponse(t,
-                            messages -> Templates.creature(creature, messages),
-                            cause -> Qute.fmt("Creature with name \"{}\" already exists", form.name));
+                    return recoverWithNewSession(() -> Panache.withSession(
+                            () -> failureToResponse(t,
+                                    messages -> form.applyTo(new Creature(), false).map(c -> Templates.creature(c, messages)),
+                                    cause -> Qute.fmt("Creature with name \"{}\" already exists", form.name))));
                 });
     }
 
     @GET
     @Path("{id}")
     @Produces(MediaType.TEXT_HTML)
-    public TemplateInstance get(Long id) {
-        return Templates.creature(creatureDao.findCreature(id).memoize().indefinitely());
+    public Uni<TemplateInstance> get(Long id) {
+        return creatureDao.findCreature(id).map(c -> Templates.creature(c));
     }
 
     @POST
@@ -80,13 +79,15 @@ public class CreatureDetail extends Controller {
                 .onItem().ifNotNull().transform(v -> RestResponse.seeOther(detailUri))
                 // TODO error page
                 .onItem().ifNull().continueWith(RestResponse.notFound())
-                .onFailure().recoverWithUni(t -> {
-                    HibernateReactivePanache.destroySession();
-                    return failureToResponse(t,
-                            messages -> Templates.creature(
-                                    creatureDao.findCreature(id).chain(c -> form.applyTo(c, false)).memoize().indefinitely(),
-                                    messages),
-                            cause -> Qute.fmt("Creature with name \"{}\" already exists", form.name));
+                .onFailure()
+                .recoverWithUni(t -> {
+                    return recoverWithNewSession(() -> Panache.withSession(
+                            () -> failureToResponse(t,
+                                    messages -> creatureDao.findCreature(id).chain(c -> form.applyTo(c, false))
+                                            .map(c -> Templates.creature(
+                                                    c,
+                                                    messages)),
+                                    cause -> Qute.fmt("Creature with name \"{}\" already exists", form.name))));
                 });
     }
 
@@ -129,7 +130,7 @@ public class CreatureDetail extends Controller {
     Uni<RestResponse<Object>> cannotDeleteCreature(Long creatureId) {
         return creatureDao.findCreature(creatureId).chain(
                 creature -> Templates
-                        .creature(Uni.createFrom().item(creature),
+                        .creature(creature,
                                 List.of(Qute.fmt("Creature with name \"{}\" is used in a warband", creature.name)))
                         .createUni()
                         .map(s -> RestResponse.ok(s, MediaType.TEXT_HTML_TYPE)));

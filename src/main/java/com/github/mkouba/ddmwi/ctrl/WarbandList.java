@@ -5,12 +5,6 @@ import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
 import org.jboss.resteasy.reactive.RestQuery;
 
 import com.github.mkouba.ddmwi.Warband;
@@ -22,6 +16,11 @@ import com.github.mkouba.ddmwi.dao.WarbandDao;
 import io.quarkus.qute.TemplateExtension;
 import io.quarkus.qute.TemplateInstance;
 import io.smallrye.mutiny.Uni;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
 @Path(WarbandList.PATH)
 public class WarbandList extends Controller {
@@ -43,26 +42,26 @@ public class WarbandList extends Controller {
 
     @GET
     @Produces(MediaType.TEXT_HTML)
-    public TemplateInstance list(@RestQuery String q, @RestQuery int page, @RestQuery String sortBy) {
+    public Uni<TemplateInstance> list(@RestQuery String q, @RestQuery int page, @RestQuery String sortBy) {
         SortInfo sortInfo = new SortInfo(sortBy, warbandDao.getSortOptions());
         Filters filters = warbandDao.parse(q);
         Uni<PageResults<Warband>> pageResults = warbandDao.findPage(page < 1 ? 0 : page - 1, sortInfo,
                 filters.getWhereClause(),
                 filters.getParameters());
-        return Templates.warbands(pageResults.memoize().indefinitely(), q, sortInfo);
+        return pageResults.map(pr -> Templates.warbands(pr, q, sortInfo));
     }
 
     @GET
     @Path("page")
     @Produces(MediaType.TEXT_HTML)
-    public TemplateInstance page(@RestQuery String q, @RestQuery int page, @RestQuery String sortBy) {
+    public Uni<TemplateInstance> page(@RestQuery String q, @RestQuery int page, @RestQuery String sortBy) {
         SortInfo sortInfo = new SortInfo(sortBy, warbandDao.getSortOptions());
         Filters filters = warbandDao.parse(q);
         Uni<PageResults<Warband>> pageResults = warbandDao.findPage(page < 1 ? 0 : page - 1, sortInfo,
                 filters.getWhereClause(),
                 filters.getParameters());
         setHtmxPush("/warband-list?q=%s&sortBy=%s&page=%s", q, sortBy, page);
-        return Tags.warbandCards(pageResults.memoize().indefinitely(), q, sortInfo, "/warband-list/page", "#warbands");
+        return pageResults.map(pr -> Tags.warbandCards(pr, q, sortInfo, "/warband-list/page", "#warbands"));
     }
 
     @TemplateExtension(namespace = "warband")

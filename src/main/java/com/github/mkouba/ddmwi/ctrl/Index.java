@@ -2,14 +2,13 @@ package com.github.mkouba.ddmwi.ctrl;
 
 import java.util.Optional;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.jboss.resteasy.reactive.RestResponse;
 
 import io.quarkus.qute.Results;
 import io.quarkus.qute.TemplateExtension;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
 
 @Path("/")
 public class Index extends Controller {

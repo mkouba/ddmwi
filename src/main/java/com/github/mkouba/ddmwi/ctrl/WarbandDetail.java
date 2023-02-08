@@ -4,15 +4,6 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.persistence.NoResultException;
-import javax.ws.rs.BeanParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
 import org.jboss.resteasy.reactive.RestForm;
 import org.jboss.resteasy.reactive.RestPath;
 import org.jboss.resteasy.reactive.RestQuery;
@@ -27,11 +18,20 @@ import com.github.mkouba.ddmwi.dao.WarbandDao;
 import com.github.mkouba.ddmwi.security.UserIdentityProvider;
 
 import io.quarkus.hibernate.reactive.panache.Panache;
+import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.quarkus.qute.Qute;
 import io.quarkus.qute.TemplateInstance;
 import io.quarkus.security.identity.CurrentIdentityAssociation;
 import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Uni;
+import jakarta.inject.Inject;
+import jakarta.persistence.NoResultException;
+import jakarta.ws.rs.BeanParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
 @NonBlocking
 @Path(WarbandDetail.PATH)
@@ -50,10 +50,10 @@ public class WarbandDetail extends Controller {
 
     @GET
     @Produces(MediaType.TEXT_HTML)
-    public TemplateInstance get() {
-        return Templates.warband(Uni.createFrom().item(new Warband()),
-                Uni.createFrom().item(new PageResults<>(Collections.emptyList(), 0, 0)), Collections.emptyList(), "",
-                new SortInfo(creatureDao.getSortOptions()));
+    public Uni<TemplateInstance> get() {
+        return toUni(Templates.warband(new Warband(),
+                new PageResults<>(Collections.emptyList(), 0, 0), Collections.emptyList(), "",
+                new SortInfo(creatureDao.getSortOptions())));
     }
 
     @POST
@@ -63,32 +63,31 @@ public class WarbandDetail extends Controller {
                 w -> identity.getDeferredIdentity().chain(
                         i -> Panache.withTransaction(
                                 () -> w.setUser(i.getAttribute(UserIdentityProvider.USER_ID)).persistAndFlush())));
-        return warband.onItem().transform(v -> RestResponse.seeOther(listUri))
+        return warband.onItem().transform(w -> RestResponse.seeOther(listUri))
                 .onFailure()
                 .recoverWithUni(t -> {
-                    HibernateReactivePanache.destroySession();
-                    return failureToResponse(t,
-                            messages -> Templates.warband(warband,
-                                    Uni.createFrom().item(new PageResults<>(Collections.emptyList(), 0, 0)), messages, "",
-                                    new SortInfo(creatureDao.getSortOptions())),
-                            cause -> Qute.fmt("Warband with name \"{}\" already exists", form.name));
+                    return recoverWithNewSession(() -> failureToResponse(t,
+                            messages -> form.applyTo(new Warband(), false).map(w -> Templates.warband(w,
+                                    PageResults.empty(), messages, "", new SortInfo(creatureDao.getSortOptions()))),
+                            cause -> Qute.fmt("Warband with name \"{}\" already exists", form.name)));
                 });
     }
 
     @GET
     @Path("{id}")
     @Produces(MediaType.TEXT_HTML)
-    public TemplateInstance get(Long id, @RestQuery String q, @RestQuery int page, @RestQuery String sortBy) {
+    public Uni<TemplateInstance> get(Long id, @RestQuery String q, @RestQuery int page, @RestQuery String sortBy) {
         SortInfo sortInfo = new SortInfo(sortBy, creatureDao.getSortOptions());
-        Uni<Warband> warband = warbandDao.findWarband(id).memoize().indefinitely();
-        // TODO warband not found
-        return Templates.warband(warband,
-                warbandDao.findWarbandCreatures(warband, creatureDao.parse(q), page, sortInfo).memoize().indefinitely(),
-                List.of(),
-                q,
-                sortInfo);
+        return warbandDao.findWarband(id).chain(w -> warbandDao.findWarbandCreatures(w, creatureDao.parse(q), page, sortInfo)
+                .map(pr -> Templates.warband(w, pr, List.of(), q, sortInfo))).onFailure().recoverWithItem(t -> {
+                    if (t instanceof NoResultException) {
+                        return Templates.error("Warband not found .", false);
+                    }
+                    return Templates.error();
+                });
     }
 
+    @WithTransaction
     @GET
     @Path("{id}/available-creatures")
     @Produces(MediaType.TEXT_HTML)
@@ -96,12 +95,11 @@ public class WarbandDetail extends Controller {
             @RestQuery String sortBy) {
         SortInfo sortInfo = new SortInfo(sortBy, creatureDao.getSortOptions());
         return warbandDao.findWarband(id)
-                .onItem().transform(w -> {
+                .chain(w -> warbandDao.findWarbandCreatures(w, creatureDao.parse(q), page, sortInfo).map(pr -> {
                     setHtmxPush("/warband-detail/%s?q=%s&sortBy=%s&page=%s", id, q, sortBy, page);
-                    return Tags.creatureCards(w,
-                            warbandDao.findWarbandCreatures(w, creatureDao.parse(q), page, sortInfo).memoize().indefinitely(),
-                            q, sortInfo, "/warband-detail/" + id + "/available-creatures", "#warband-available-creatures");
-                })
+                    return Tags.creatureCards(w, pr, q, sortInfo, "/warband-detail/" + id + "/available-creatures",
+                            "#warband-available-creatures");
+                }))
                 .onFailure().recoverWithItem(t -> {
                     if (t instanceof NoResultException) {
                         return Templates.error("Warband not found .", false);
@@ -110,65 +108,62 @@ public class WarbandDetail extends Controller {
                 });
     }
 
+    @WithTransaction
     @POST
     @Path("{id}")
     public Uni<RestResponse<Object>> update(@RestPath Long id, @BeanParam WarbandForm form) {
         URI detailUri = uriInfo.getRequestUri();
-        return Panache.withTransaction(() -> warbandDao.findWarband(id)
-                .onItem().ifNotNull().call(form::applyTo))
+        return warbandDao.findWarband(id)
+                .onItem().ifNotNull().call(form::applyTo)
                 .onItem().ifNotNull().transform(v -> RestResponse.seeOther(detailUri))
                 // TODO error page
                 .onItem().ifNull().continueWith(RestResponse.notFound())
                 .onFailure().recoverWithUni(t -> {
-                    HibernateReactivePanache.destroySession();
-                    return warbandDao.findWarband(id).flatMap(w -> {
+                    return recoverWithNewSession(() -> warbandDao.findWarband(id).chain(w -> {
                         return failureToResponse(t,
                                 messages -> {
-                                    Uni<Warband> warband = form.applyTo(w, false).memoize().indefinitely();
-                                    return Templates.warband(warband,
-                                            warbandDao.findWarbandCreatures(warband, Filters.EMPTY, 0,
-                                                    new SortInfo(creatureDao.getSortOptions()))
-                                                    .memoize().indefinitely(),
-                                            messages, "",
-                                            null);
+                                    return form.applyTo(w, false)
+                                            .chain(fw -> warbandDao.findWarbandCreatures(fw, Filters.EMPTY, 0,
+                                                    new SortInfo(creatureDao.getSortOptions())).map(wc -> {
+                                                        return Templates.warband(fw, wc, messages, "", null);
+                                                    }));
                                 },
                                 cause -> Qute.fmt("Warband with name \"{}\" already exists", form.name));
-                    });
+                    }));
                 });
     }
 
+    @WithTransaction
     @POST
     @Path("{id}/add-creature/{creatureId}")
     public Uni<RestResponse<Object>> addCreature(@RestPath Long id, @RestPath Long creatureId, @RestForm String queryStr) {
         URI requestUri = uriFrom(PATH + "/" + id, queryStr);
         // TODO check user
-        return Panache.withTransaction(() -> {
-            return creatureDao.findCreature(creatureId).onItem().ifNotNull()
-                    .transformToUni(c -> warbandDao.findWarband(id).onItem().ifNotNull().invoke(w -> w.addCreature(c))).onItem()
-                    .ifNotNull().transform(e -> RestResponse.seeOther(requestUri))
-                    .onItem().ifNull().continueWith(RestResponse.notFound());
-        });
+        return creatureDao.findCreature(creatureId).onItem().ifNotNull()
+                .transformToUni(c -> warbandDao.findWarband(id).onItem().ifNotNull().invoke(w -> w.addCreature(c))).onItem()
+                .ifNotNull().transform(e -> RestResponse.seeOther(requestUri))
+                .onItem().ifNull().continueWith(RestResponse.notFound());
     }
 
+    @WithTransaction
     @POST
     @Path("{id}/remove-creature/{warbandCreatureId}")
     public Uni<RestResponse<Object>> removeCreature(@RestPath Long id, @RestPath Long warbandCreatureId,
             @RestForm String queryStr) {
         URI requestUri = uriFrom(PATH + "/" + id, queryStr);
         // TODO check user
-        return Panache.withTransaction(() -> {
-            return warbandDao.findWarband(id).onItem().ifNotNull().invoke(w -> {
-                w.removeCreature(warbandCreatureId);
-            }).onItem().ifNotNull().transform(e -> RestResponse.seeOther(requestUri))
-                    .onItem().ifNull().continueWith(RestResponse.notFound());
-        });
+        return warbandDao.findWarband(id).onItem().ifNotNull().invoke(w -> {
+            w.removeCreature(warbandCreatureId);
+        }).onItem().ifNotNull().transform(e -> RestResponse.seeOther(requestUri))
+                .onItem().ifNull().continueWith(RestResponse.notFound());
     }
 
+    @WithTransaction
     @POST
     @Path("{id}/delete")
     public Uni<RestResponse<Object>> delete(@RestPath Long id) {
         URI listUri = uriFrom(WarbandList.PATH);
-        return Panache.withTransaction(() -> Warband.deleteById(id)).map(result -> RestResponse.seeOther(listUri));
+        return Warband.deleteById(id).map(result -> RestResponse.seeOther(listUri));
     }
 
 }

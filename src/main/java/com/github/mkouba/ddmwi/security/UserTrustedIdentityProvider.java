@@ -1,8 +1,5 @@
 package com.github.mkouba.ddmwi.security;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import org.hibernate.reactive.mutiny.Mutiny.SessionFactory;
 import org.hibernate.reactive.mutiny.Mutiny.StatelessSession;
 import org.jboss.logging.Logger;
@@ -17,6 +14,8 @@ import io.quarkus.security.identity.request.TrustedAuthenticationRequest;
 import io.quarkus.security.runtime.QuarkusPrincipal;
 import io.quarkus.security.runtime.QuarkusSecurityIdentity;
 import io.smallrye.mutiny.Uni;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 @Singleton
 public class UserTrustedIdentityProvider implements IdentityProvider<TrustedAuthenticationRequest> {

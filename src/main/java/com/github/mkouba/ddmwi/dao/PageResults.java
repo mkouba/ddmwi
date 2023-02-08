@@ -9,7 +9,7 @@ public class PageResults<T> {
     static final PageResults<Object> EMPTY = new PageResults<>(Collections.emptyList(), 0, 0);
 
     @SuppressWarnings("unchecked")
-    static <E> PageResults<E> empty() {
+    public static <E> PageResults<E> empty() {
         return (PageResults<E>) EMPTY;
     }
 

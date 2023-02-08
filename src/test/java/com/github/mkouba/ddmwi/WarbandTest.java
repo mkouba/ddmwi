@@ -5,18 +5,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import javax.persistence.PersistenceException;
-
+import org.hibernate.reactive.mutiny.Mutiny;
 import org.junit.jupiter.api.Test;
 
 import com.github.mkouba.ddmwi.User.Role;
 import com.github.mkouba.ddmwi.Warband.PointLimit;
 
-import io.quarkus.hibernate.reactive.panache.Panache;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.vertx.RunOnVertxContext;
 import io.quarkus.test.vertx.UniAsserter;
 import io.smallrye.mutiny.Uni;
+import jakarta.persistence.PersistenceException;
 
 @QuarkusTest
 public class WarbandTest {
@@ -53,6 +52,7 @@ public class WarbandTest {
     @RunOnVertxContext
     @Test
     public void testPersist(UniAsserter asserter) {
+        asserter = new TransactionUniAsserterInterceptor(asserter);
         Creature c1 = CreatureTest.creature("1").good().cost(50).civilization().wild().build();
         Creature c2 = CreatureTest.creature("2").cost(50).civilization().build();
         asserter
@@ -60,17 +60,19 @@ public class WarbandTest {
                 .execute(() -> persistAll(c1, c2))
                 // Create a warband
                 .execute(() -> createWarband("Test", c1, c2))
-                .assertThat(() -> Warband.<Warband> find("name", "Test").firstResult(), w -> {
-                    assertNotNull(w.id);
-                    assertEquals(2, w.creatures.size());
-                    assertFalse(w.arena);
-                })
+                .assertThat(() -> Warband.<Warband> find("name", "Test").firstResult()
+                        .chain(w -> Mutiny.fetch(w.creatures).map(wc -> w)), w -> {
+                            assertNotNull(w.id);
+                            assertEquals(2, w.creatures.size());
+                            assertFalse(w.arena);
+                        })
                 .execute(this::deleteAll);
     }
 
     @RunOnVertxContext
     @Test
     public void testUniqueConstraint(UniAsserter asserter) {
+        asserter = new TransactionUniAsserterInterceptor(asserter);
         Creature c1 = CreatureTest.creature("1").good().cost(50).civilization().wild().build();
         Creature c2 = CreatureTest.creature("2").cost(50).civilization().build();
         asserter
@@ -84,18 +86,17 @@ public class WarbandTest {
 
     private Uni<Warband> createWarband(String name, Creature... creatures) {
         return findFoo()
-                .chain(user -> Panache.withTransaction(() -> {
+                .chain(user -> {
                     Warband w = create(user, name);
                     for (Creature creature : creatures) {
                         w.addCreature(creature);
                     }
                     return w.persist();
-                }));
+                });
     }
 
     private Uni<Void> persistAll(Creature c1, Creature c2) {
-        return Panache.withTransaction(
-                () -> UserTest.create("foo", "foo", Role.USER).persist().chain(ignored -> Creature.persist(c1, c2)));
+        return UserTest.create("foo", "foo", Role.USER).persist().chain(ignored -> Creature.persist(c1, c2));
     }
 
     private Uni<User> findFoo() {
@@ -110,7 +111,7 @@ public class WarbandTest {
     }
 
     public Uni<Void> deleteAll() {
-        return Panache.withTransaction(() -> Warband.<Warband> findAll().list().chain(all -> {
+        return Warband.<Warband> findAll().list().chain(all -> {
             Uni<Void> uni = Uni.createFrom().voidItem();
             for (Warband w : all) {
                 uni = uni.chain(ignored -> w.delete());
@@ -118,7 +119,8 @@ public class WarbandTest {
             return uni;
         })
                 .chain(i -> WarbandCreature.deleteAll())
-                .chain(i -> Creature.deleteAll())).chain(i -> User.deleteAll()).replaceWithVoid();
+                .chain(i -> Creature.deleteAll())
+                .chain(i -> User.deleteAll()).replaceWithVoid();
     }
 
 }

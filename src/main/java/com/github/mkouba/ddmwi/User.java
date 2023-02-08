@@ -4,16 +4,15 @@ import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
-
 import io.quarkus.hibernate.reactive.panache.PanacheEntity;
 import io.quarkus.qute.TemplateEnum;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "app_user", uniqueConstraints = @UniqueConstraint(name = "user_username", columnNames = "username"))

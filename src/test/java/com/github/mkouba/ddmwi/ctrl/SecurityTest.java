@@ -8,6 +8,8 @@ import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.mkouba.ddmwi.TransactionUniAsserterInterceptor;
+
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.vertx.RunOnVertxContext;
 import io.quarkus.test.vertx.UniAsserter;
@@ -18,8 +20,9 @@ public class SecurityTest extends ControllerTest {
     @RunOnVertxContext
     @Test
     public void testLoginRedirect(UniAsserter asserter) {
+        asserter = new TransactionUniAsserterInterceptor(asserter);
         asserter
-                .execute(() -> persistAll())
+                .execute(() -> createUsers())
                 .execute(() -> executeBlocking(() -> {
                     assertLoginPageRedirect("/creature-list");
                     assertLoginPageRedirect("/creature-detail/1");
@@ -41,7 +44,7 @@ public class SecurityTest extends ControllerTest {
                             .extract().response().asString();
                     assertTrue(html.contains("<h1>Creatures"), html);
                 }))
-                .execute(this::deleteAll);
+                .execute(this::deleteUsers);
     }
 
     private void assertLoginPageRedirect(String path) {

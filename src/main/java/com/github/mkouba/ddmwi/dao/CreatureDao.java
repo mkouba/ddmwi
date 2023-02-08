@@ -8,18 +8,15 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import org.hibernate.reactive.mutiny.Mutiny.Query;
 import org.jboss.logging.Logger;
 
 import com.github.mkouba.ddmwi.Creature;
+import com.github.mkouba.ddmwi.Creature.Alignment;
+import com.github.mkouba.ddmwi.Creature.Faction;
 import com.github.mkouba.ddmwi.CreatureView;
 import com.github.mkouba.ddmwi.User;
 import com.github.mkouba.ddmwi.UserCreature;
-import com.github.mkouba.ddmwi.Creature.Alignment;
-import com.github.mkouba.ddmwi.Creature.Faction;
 import com.github.mkouba.ddmwi.dao.FilterParser.Operator;
 import com.github.mkouba.ddmwi.dao.Filters.Filter;
 import com.github.mkouba.ddmwi.security.UserIdentityProvider;
@@ -29,6 +26,8 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.quarkus.security.identity.CurrentIdentityAssociation;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Uni;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 @Singleton
 public class CreatureDao {

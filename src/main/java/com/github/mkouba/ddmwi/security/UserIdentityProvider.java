@@ -4,9 +4,6 @@ import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
 import java.time.LocalDateTime;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import org.hibernate.reactive.mutiny.Mutiny.Session;
 import org.hibernate.reactive.mutiny.Mutiny.SessionFactory;
 import org.jboss.logging.Logger;
@@ -26,6 +23,8 @@ import io.quarkus.security.identity.request.UsernamePasswordAuthenticationReques
 import io.quarkus.security.runtime.QuarkusPrincipal;
 import io.quarkus.security.runtime.QuarkusSecurityIdentity;
 import io.smallrye.mutiny.Uni;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 @Singleton
 public class UserIdentityProvider implements IdentityProvider<UsernamePasswordAuthenticationRequest> {

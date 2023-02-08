@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import com.github.mkouba.ddmwi.User.Role;
 
 import io.quarkus.elytron.security.common.BcryptUtil;
-import io.quarkus.hibernate.reactive.panache.Panache;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.vertx.RunOnVertxContext;
 import io.quarkus.test.vertx.UniAsserter;
@@ -23,14 +22,15 @@ public class UserTest {
     @RunOnVertxContext
     @Test
     public void testPersist(UniAsserter asserter) {
-        asserter.execute(() -> Panache.withTransaction(() -> create("foo", "foo", Role.USER).persist()))
+        asserter = new TransactionUniAsserterInterceptor(asserter);
+        asserter.execute(() -> create("foo", "foo", Role.USER).persist())
                 .assertThat(() -> User.<User> find("username", "foo").firstResult(), u -> {
                     assertNotNull(u);
                     assertNotNull(u.id);
                     assertTrue(u.active);
                     assertFalse(u.isAdmin());
                     assertNull(u.lastLogin);
-                }).execute(() -> Panache.withTransaction(() -> User.deleteAll()));
+                }).execute(() -> User.deleteAll());
     }
 
     public static User create(String username, String password, Role... roles) {

@@ -3,13 +3,6 @@ package com.github.mkouba.ddmwi.ctrl;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.reactive.RestQuery;
 import org.jboss.resteasy.reactive.RestResponse;
@@ -21,10 +14,16 @@ import com.github.mkouba.ddmwi.dao.Filters;
 import com.github.mkouba.ddmwi.dao.PageResults;
 import com.github.mkouba.ddmwi.dao.SortInfo;
 
-import io.quarkus.hibernate.reactive.panache.Panache;
+import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.quarkus.qute.TemplateExtension;
 import io.quarkus.qute.TemplateInstance;
 import io.smallrye.mutiny.Uni;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
 @Path(CreatureList.PATH)
 public class CreatureList extends Controller {
@@ -54,35 +53,34 @@ public class CreatureList extends Controller {
 
     @GET
     @Produces(MediaType.TEXT_HTML)
-    public TemplateInstance get(@RestQuery String q, @RestQuery int page, @RestQuery String sortBy) {
+    public Uni<TemplateInstance> get(@RestQuery String q, @RestQuery int page, @RestQuery String sortBy) {
         SortInfo sortInfo = new SortInfo(sortBy, creatureDao.getSortOptions());
         Filters filters = creatureDao.parse(q);
         Uni<PageResults<? extends CreatureView>> pageResults = creatureDao.findPage(filters, page < 1 ? 0 : page - 1, sortInfo,
                 filters.getWhereClause(),
                 filters.getParameters());
-        return Templates.creatures(pageResults.memoize().indefinitely(), q, sortInfo);
+        return pageResults.map(pr -> Templates.creatures(pr, q, sortInfo));
     }
 
     @GET
     @Path("page")
     @Produces(MediaType.TEXT_HTML)
-    public TemplateInstance page(@RestQuery String q, @RestQuery int page, @RestQuery String sortBy) {
+    public Uni<TemplateInstance> page(@RestQuery String q, @RestQuery int page, @RestQuery String sortBy) {
         SortInfo sortInfo = new SortInfo(sortBy, creatureDao.getSortOptions());
         Filters filters = creatureDao.parse(q);
         Uni<PageResults<? extends CreatureView>> pageResults = creatureDao.findPage(filters, page < 1 ? 0 : page - 1, sortInfo,
                 filters.getWhereClause(),
                 filters.getParameters());
         setHtmxPush("/creature-list/?q=%s&sortBy=%s&page=%s", q, sortBy, page);
-        return Tags.creatureCards(null,
-                pageResults.memoize().indefinitely(),
-                q, sortInfo, "/creature-list/page", "#creatures");
+        return pageResults.map(pr -> Tags.creatureCards(null, pr,
+                q, sortInfo, "/creature-list/page", "#creatures"));
     }
 
+    @WithTransaction
     @Path("toggle-collection/{id}")
     @POST
     public Uni<RestResponse<Object>> toggleCollection(Long id) {
-        return Panache.withTransaction(
-                () -> creatureDao.toggleCollection(id).map(v -> RestResponse.ok()));
+        return creatureDao.toggleCollection(id).map(v -> RestResponse.ok());
 
     }
 

@@ -5,10 +5,10 @@ import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
-
 import com.github.mkouba.ddmwi.Creature.Faction;
+
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 @Converter
 public class FactionsConverter implements AttributeConverter<Set<Faction>, String> {
