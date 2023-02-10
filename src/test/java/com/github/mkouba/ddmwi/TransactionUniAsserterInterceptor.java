@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import io.quarkus.hibernate.reactive.panache.Panache;
 import io.quarkus.test.vertx.UniAsserter;
+import io.quarkus.test.vertx.UniAsserterInterceptor;
 import io.smallrye.mutiny.Uni;
 
 public class TransactionUniAsserterInterceptor extends UniAsserterInterceptor {
@@ -13,7 +14,7 @@ public class TransactionUniAsserterInterceptor extends UniAsserterInterceptor {
     }
 
     @Override
-    protected <T> Supplier<Uni<T>> aroundUni(Supplier<Uni<T>> uniSupplier) {
+    protected <T> Supplier<Uni<T>> transformUni(Supplier<Uni<T>> uniSupplier) {
         return () -> Panache.withTransaction(uniSupplier);
     }
 
