@@ -6,6 +6,8 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.reactive.RestResponse;
 
+import com.github.mkouba.ddmwi.security.UserActivityTracker;
+
 import io.quarkus.security.identity.CurrentIdentityAssociation;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.http.HttpServerResponse;
@@ -24,12 +26,16 @@ public class UserLogout extends Controller {
     @Inject
     CurrentIdentityAssociation identity;
 
+    @Inject
+    UserActivityTracker activityTracker;
+
     @POST
     public Uni<RestResponse<Object>> logout(HttpServerResponse response) {
         URI loginUri = uriFrom(UserLogin.PATH);
         return identity.getDeferredIdentity().map(identity -> {
             LOG.infof("User %s logged out", identity.getPrincipal().getName());
             response.removeCookie(cookieName, true);
+            activityTracker.remove(identity.getPrincipal().getName());
             return RestResponse.seeOther(loginUri);
         });
     }

@@ -1,0 +1,46 @@
+{#include base}
+{#title}Dashboard
+{#content}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Users</th>
+            <th scope="col">Creatures</th>
+            <th scope="col">Warbands</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{info.users}</td>
+            <td>{info.creatures}</td>
+            <td>{info.warbands}</td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>Active Users</h2>
+<div hx-sse="connect:/dashboard/sse-active-users">
+    {#fragment activeUsers}
+    <div hx-trigger="sse:message" hx-get="/dashboard/active-users">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Username</th>
+                    <th scope="col">Last activity</th>
+                </tr>
+            </thead>
+            <tbody>
+                {#for entry in activeUsers}
+                <tr>
+                    <td>{entry.key}</td>
+                    <td>{entry.value}</td>
+                </tr>
+                {/for}
+            </tbody>
+        </table>
+    </div>
+    {/fragment}
+</div>
+
+{/include}

@@ -26,6 +26,9 @@ public class UserTrustedIdentityProvider implements IdentityProvider<TrustedAuth
     @Inject
     SessionFactory factory;
 
+    @Inject
+    UserActivityTracker activityTracker;
+
     @Override
     public Class<TrustedAuthenticationRequest> getRequestType() {
         return TrustedAuthenticationRequest.class;
@@ -57,6 +60,8 @@ public class UserTrustedIdentityProvider implements IdentityProvider<TrustedAuth
         builder.setPrincipal(new QuarkusPrincipal(request.getPrincipal()));
         builder.addAttribute("userId", user.id);
         UserIdentityProvider.addRoles(user, builder);
+
+        activityTracker.update(user.username);
 
         return Uni.createFrom().item(builder.build());
     }

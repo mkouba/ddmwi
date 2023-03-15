@@ -23,6 +23,7 @@ import io.quarkus.security.identity.request.UsernamePasswordAuthenticationReques
 import io.quarkus.security.runtime.QuarkusPrincipal;
 import io.quarkus.security.runtime.QuarkusSecurityIdentity;
 import io.smallrye.mutiny.Uni;
+import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
@@ -36,6 +37,12 @@ public class UserIdentityProvider implements IdentityProvider<UsernamePasswordAu
     // For some reason we can't use Panache inside IdentityProvider.authenticate()
     @Inject
     SessionFactory factory;
+
+    @Inject
+    UserActivityTracker activityTracker;
+    
+    @Inject
+    Event<UserLoggedIn> userLoggedIn;
 
     @Override
     public Class<UsernamePasswordAuthenticationRequest> getRequestType() {
@@ -78,7 +85,9 @@ public class UserIdentityProvider implements IdentityProvider<UsernamePasswordAu
         addRoles(user, builder);
 
         user.lastLogin = LocalDateTime.now();
-
+        activityTracker.update(user.username);
+        userLoggedIn.fire(new UserLoggedIn(user.username));
+        
         return Uni.createFrom().item(builder.build());
     }
 
@@ -95,5 +104,10 @@ public class UserIdentityProvider implements IdentityProvider<UsernamePasswordAu
             builder.addRole(role.strValue());
         }
     }
+    
+    
+    public record UserLoggedIn(String username) {
+    }
+
 
 }

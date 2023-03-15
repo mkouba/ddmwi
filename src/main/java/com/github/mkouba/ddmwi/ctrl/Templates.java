@@ -1,7 +1,9 @@
 package com.github.mkouba.ddmwi.ctrl;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import com.github.mkouba.ddmwi.Creature;
 import com.github.mkouba.ddmwi.CreatureView;
@@ -12,7 +14,6 @@ import com.github.mkouba.ddmwi.dao.SortInfo;
 
 import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
-import io.smallrye.mutiny.Uni;
 
 @CheckedTemplate
 class Templates {
@@ -49,5 +50,9 @@ class Templates {
     static native TemplateInstance user(User user, List<String> errorMessages);
 
     static native TemplateInstance warbandLink(Warband warband);
+    
+    static native TemplateInstance dashboard(Dashboard.Info info, List<Map.Entry<String, LocalDateTime>> activeUsers);
+    
+    static native TemplateInstance dashboard$activeUsers(List<Map.Entry<String, LocalDateTime>> activeUsers);
     
 }

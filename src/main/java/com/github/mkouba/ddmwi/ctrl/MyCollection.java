@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.reactive.MultipartForm;
 import org.jboss.resteasy.reactive.RestResponse;
 import org.jboss.resteasy.reactive.RestResponse.ResponseBuilder;
 
@@ -71,7 +70,7 @@ public class MyCollection extends Controller {
     @Path("/import")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.TEXT_HTML)
-    public Uni<RestResponse<Object>> importCollection(@MultipartForm FileImportForm form) {
+    public Uni<RestResponse<Object>> importCollection(FileImportForm form) {
         URI listUri = uriFrom(CreatureList.PATH);
         return importJson(form).map(v -> RestResponse.seeOther(listUri));
     }
