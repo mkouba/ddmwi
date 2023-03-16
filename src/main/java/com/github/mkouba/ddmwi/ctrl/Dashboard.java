@@ -1,5 +1,7 @@
 package com.github.mkouba.ddmwi.ctrl;
 
+import java.time.Duration;
+
 import org.jboss.resteasy.reactive.RestStreamElementType;
 
 import com.github.mkouba.ddmwi.Creature;
@@ -19,6 +21,8 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.sse.OutboundSseEvent;
+import jakarta.ws.rs.sse.Sse;
 
 @Path(Dashboard.PATH)
 public class Dashboard extends Controller {
@@ -28,7 +32,10 @@ public class Dashboard extends Controller {
     @Inject
     UserActivityTracker activityTracker;
 
-    private final BroadcastProcessor<String> activeUsers = BroadcastProcessor.create();
+    @Inject
+    Sse sse;
+
+    private final BroadcastProcessor<OutboundSseEvent> activeUsers = BroadcastProcessor.create();
 
     @GET
     @Produces(MediaType.TEXT_HTML)
@@ -48,16 +55,21 @@ public class Dashboard extends Controller {
     @Path("sse-active-users")
     @GET
     @RestStreamElementType(MediaType.TEXT_PLAIN)
-    public Multi<String> sseActiveUsers() {
-        return activeUsers;
+    public Multi<OutboundSseEvent> sseActiveUsers() {
+        return Multi.createBy().merging().streams(activeUsers,
+                Multi.createFrom()
+                        .ticks()
+                        .every(Duration.ofSeconds(10))
+                        // Send an empty message every ten seconds to workaround problems with cloud providers that can close the connection after 10s of inactivity
+                        .onItem().transform(t -> sse.newEvent("ping", "")));
     }
 
     void onUserRemoved(@Observes UserRemoved user) {
-        activeUsers.onNext(user.username());
+        activeUsers.onNext(sse.newEventBuilder().name("change").data(user.username()).build());
     }
 
     void onUserLoggedIn(@Observes UserLoggedIn user) {
-        activeUsers.onNext(user.username());
+        activeUsers.onNext(sse.newEventBuilder().name("change").data(user.username()).build());
     }
 
     public record Info(long users, long creatures, long warbands) {

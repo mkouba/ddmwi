@@ -21,8 +21,8 @@
 
 <h2>Active Users</h2>
 <div hx-sse="connect:/dashboard/sse-active-users">
+    <div hx-trigger="sse:change" hx-get="/dashboard/active-users">
     {#fragment activeUsers}
-    <div hx-trigger="sse:message" hx-get="/dashboard/active-users">
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -39,8 +39,8 @@
                 {/for}
             </tbody>
         </table>
-    </div>
     {/fragment}
+    </div>
 </div>
 
 {/include}
