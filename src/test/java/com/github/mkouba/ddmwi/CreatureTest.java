@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.function.Consumer;
 
-import javax.inject.Inject;
-
 import org.hibernate.reactive.mutiny.Mutiny.SessionFactory;
 import org.junit.jupiter.api.Test;
 
@@ -15,6 +13,7 @@ import com.github.mkouba.ddmwi.Creature.Faction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.vertx.RunOnVertxContext;
 import io.quarkus.test.vertx.UniAsserter;
+import jakarta.inject.Inject;
 import jakarta.persistence.PersistenceException;
 
 @QuarkusTest
