@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import io.quarkus.hibernate.reactive.panache.PanacheEntity;
 import io.quarkus.qute.TemplateEnum;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -24,7 +23,7 @@ import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "creature", uniqueConstraints = @UniqueConstraint(name = "creature_name", columnNames = "name"))
-public class Creature extends PanacheEntity implements CreatureView {
+public class Creature extends BaseEntity implements CreatureView {
 
     @NotNull
     @Size(min = 1, max = 100)

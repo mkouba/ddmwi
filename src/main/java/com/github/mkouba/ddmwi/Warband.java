@@ -13,7 +13,6 @@ import org.hibernate.validator.constraints.Length;
 import com.github.mkouba.ddmwi.Creature.Alignment;
 import com.github.mkouba.ddmwi.Creature.Faction;
 
-import io.quarkus.hibernate.reactive.panache.PanacheEntity;
 import io.quarkus.qute.Qute;
 import io.quarkus.qute.TemplateEnum;
 import jakarta.persistence.CascadeType;
@@ -33,7 +32,7 @@ import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "warband", uniqueConstraints = @UniqueConstraint(name = "user_warband_name", columnNames = { "name", "user_id" }))
-public class Warband extends PanacheEntity {
+public class Warband extends BaseEntity {
 
     public static final int NOTE_LIMIT = 500;
 

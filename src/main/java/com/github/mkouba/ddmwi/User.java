@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.Set;
 
-import io.quarkus.hibernate.reactive.panache.PanacheEntity;
 import io.quarkus.qute.TemplateEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -16,7 +15,7 @@ import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "app_user", uniqueConstraints = @UniqueConstraint(name = "user_username", columnNames = "username"))
-public class User extends PanacheEntity {
+public class User extends BaseEntity {
 
     public boolean active;
 

@@ -1,4 +1,6 @@
 {! params: quickFilters, hxTarget, hxGet, sortInfo !}
+{! workaround for https://github.com/quarkusio/quarkus/issues/33881 !}
+{@com.github.mkouba.ddmwi.dao.SortInfo sortInfo}
 
 <div class="filter" style="margin-top:1em;">
     <div class="input-group mb-3">

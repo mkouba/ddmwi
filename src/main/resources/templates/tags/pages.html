@@ -1,5 +1,6 @@
 {! params: page, query, sortInfo, hxGet, hxTarget !}
-
+{! workaround for https://github.com/quarkusio/quarkus/issues/33881 !}
+{@com.github.mkouba.ddmwi.dao.PageResults page}
 
 <nav aria-label="Pages" class="mt-4">
   <ul class="pagination pagination-sm flex-wrap">

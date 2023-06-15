@@ -1,6 +1,5 @@
 package com.github.mkouba.ddmwi;
 
-import io.quarkus.hibernate.reactive.panache.PanacheEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -8,7 +7,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "user_creature")
-public class UserCreature extends PanacheEntity implements CreatureView {
+public class UserCreature extends BaseEntity implements CreatureView {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
