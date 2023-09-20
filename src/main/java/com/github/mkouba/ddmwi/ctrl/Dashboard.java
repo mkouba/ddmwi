@@ -40,9 +40,11 @@ public class Dashboard extends Controller {
     @GET
     @Produces(MediaType.TEXT_HTML)
     public Uni<TemplateInstance> get() {
-        return User.count().chain(uc -> Creature.count()
-                .chain(cc -> Warband.count()
-                        .chain(wc -> toUni(Templates.dashboard(new Info(uc, cc, wc), activityTracker.getLastActivity())))));
+        return User.count()
+                .chain(uc -> Creature.count()
+                        .chain(cc -> Warband.count()
+                                .chain(wc -> toUni(
+                                        Templates.dashboard(new Info(uc, cc, wc), activityTracker.getLastActivity())))));
     }
 
     @Path("active-users")

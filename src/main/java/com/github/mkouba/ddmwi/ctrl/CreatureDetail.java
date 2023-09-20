@@ -19,6 +19,7 @@ import io.quarkus.qute.TemplateInstance;
 import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
+import jakarta.persistence.NoResultException;
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -63,7 +64,15 @@ public class CreatureDetail extends Controller {
     @Path("{id}")
     @Produces(MediaType.TEXT_HTML)
     public Uni<TemplateInstance> get(Long id) {
-        return creatureDao.findCreature(id).map(c -> Templates.creature(c));
+        return creatureDao.findCreature(id)
+                .map(c -> Templates.creature(c))
+                .onFailure()
+                .recoverWithItem(t -> {
+                    if (t instanceof NoResultException) {
+                        return Templates.error("Creature with id " + id + " not found.", false);
+                    }
+                    return Templates.error();
+                });
     }
 
     @POST

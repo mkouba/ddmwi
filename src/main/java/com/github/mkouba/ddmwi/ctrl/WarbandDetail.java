@@ -81,7 +81,7 @@ public class WarbandDetail extends Controller {
         return warbandDao.findWarband(id).chain(w -> warbandDao.findWarbandCreatures(w, creatureDao.parse(q), page, sortInfo)
                 .map(pr -> Templates.warband(w, pr, List.of(), q, sortInfo))).onFailure().recoverWithItem(t -> {
                     if (t instanceof NoResultException) {
-                        return Templates.error("Warband not found .", false);
+                        return Templates.error("Warband not found.", false);
                     }
                     return Templates.error();
                 });
