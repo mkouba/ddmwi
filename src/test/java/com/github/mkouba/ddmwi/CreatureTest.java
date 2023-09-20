@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import com.github.mkouba.ddmwi.Creature.Alignment;
 import com.github.mkouba.ddmwi.Creature.Faction;
 
+import io.quarkus.test.hibernate.reactive.panache.TransactionalUniAsserter;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.vertx.RunOnVertxContext;
 import io.quarkus.test.vertx.UniAsserter;
@@ -24,8 +25,7 @@ public class CreatureTest {
 
     @RunOnVertxContext
     @Test
-    public void testPersist(UniAsserter asserter) {
-        asserter = new TransactionUniAsserterInterceptor(asserter);
+    public void testPersist(TransactionalUniAsserter asserter) {
         asserter.execute(() -> Creature.persist(creature("Angel").good().cost(50).civilization().wild().build()))
                 .assertThat(() -> Creature.<Creature> find("name", "Angel").firstResult(), c -> {
                     assertNotNull(c);
