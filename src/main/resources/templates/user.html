@@ -1,9 +1,7 @@
 {#include base}
-{#title}User - {user.username ?: 'New'}
+{#title}User - {user.username ?: 'New'}{/title}
 {#content}
-
 {#errorMessages messages=errorMessages /}
-
 <form method="post">
     <div class="mb-3">
         <label for="inputName" class="col-form-label">Username</label>
@@ -31,5 +29,4 @@
     </div>
     </div>
 </form>
-
 {/include}

@@ -1,4 +1,6 @@
-{! params: page, query, sortInfo, hxTarget, hxGet !}
+{@com.github.mkouba.ddmwi.dao.PageResults<com.github.mkouba.ddmwi.Warband> page}
+{@String hxTarget}
+{@String hxGet}
 
 {#if page.isEmpty}
 <p>No warbands found. Create a <a href="/warband-detail">new one</a>!</p>
@@ -69,7 +71,7 @@
                                 <li>
                                     {it.name} 
                                     &nbsp;<span class="badge rounded-pill bg-secondary" title="Cost">{it.cost}</span>
-                                    {#if it.isChampion}{#champion it.championRating style="color:gray;" /} {/if}
+                                    {#if it.isChampion}{#champion rating=it.championRating style="color:gray;" /} {/if}
                                     {#if it.isEvil}<span class="badge rounded-pill bg-dark">Evil</span>{#else if it.isGood}<span class="badge rounded-pill bg-light text-dark">Good</span>{/if}
                                     </li>
                                 {/each}
@@ -108,6 +110,6 @@
     {/for}
 </div>
 
-{#pages /}
+{#pages page hxGet hxTarget /}
 
 {/if}

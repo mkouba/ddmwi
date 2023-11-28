@@ -1,5 +1,5 @@
 {#include base}
-{#title}Warband - {warband.name ?: 'New'}
+{#title}Warband - {warband.name ?: 'New'}{/title}
 {#content}
 
 {#errorMessages messages=errorMessages /}
@@ -57,7 +57,7 @@
     <div class="col-1 warband-attrs">
     <table class="table table-borderless table-striped">
         <tr>
-            <td class="text-center stat">FACTIONS<br>{#factions warband.baseFactions /}</td>
+            <td class="text-center stat">FACTIONS<br>{#factions factions=warband.baseFactions /}</td>
         </tr>
         <tr>
             <td class="text-center stat">ALIGNMENT<br>{#if warband.isEvil}<span class="badge bg-dark fs-6">Evil</span>{#else if warband.isGood}<span class="badge bg-light text-dark fs-6">Good</span>{#else}<span class="badge bg-secondary fs-6">Neutral</span>{/if}</td>
@@ -90,9 +90,9 @@
     </div>
     {#if warband.creatures}
     <div class="row row-cols-auto mb-2">
-        {#each warband.creatures}
-            {#creatureCard creature=it creatureIndex=it_index warbandSelected=true /}
-        {/each}
+        {#for creature in warband.creatures}
+            {#creatureCard warband sortInfo query page creature creatureIndex=creature_index warbandSelected=true /}
+        {/for}
     </div>
     {#else}
     <div class="text-center text-muted fs-3 no-creatures-text">No creatures added yet. Please select a creature below...</div>
@@ -104,10 +104,10 @@
 {#if warband.id}
 <h2>Available creatures</h2>
 
-{#filters quickFilters=creature:quickFilters hxTarget="#warband-available-creatures" hxGet=warband:availableCreaturesPath(warband.id) /}
+{#filters sortInfo quickFilters=creature:quickFilters hxTarget="#warband-available-creatures" hxGet=warband:availableCreaturesPath(warband.id) _unisolated /}
 
 <div id="warband-available-creatures">
-  {#creatureCards hxTarget="#warband-available-creatures" hxGet=warband:availableCreaturesPath(warband.id) /}
+  {#creatureCards page warband sortInfo query hxTarget="#warband-available-creatures" hxGet=warband:availableCreaturesPath(warband.id) /}
 </div>
 
 {/if}

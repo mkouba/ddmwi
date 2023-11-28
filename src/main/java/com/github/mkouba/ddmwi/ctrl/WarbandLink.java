@@ -2,6 +2,7 @@ package com.github.mkouba.ddmwi.ctrl;
 
 import com.github.mkouba.ddmwi.dao.WarbandDao;
 
+import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.quarkus.qute.TemplateInstance;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
@@ -17,6 +18,7 @@ public class WarbandLink extends Controller {
     @Inject
     WarbandDao warbandDao;
 
+    @WithTransaction
     @GET
     @Path("{id}")
     @Produces(MediaType.TEXT_HTML)

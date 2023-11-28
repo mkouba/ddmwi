@@ -1,4 +1,7 @@
-{! params: warband, page, query, sortInfo, hxTarget, hxGet !}
+{@com.github.mkouba.ddmwi.dao.PageResults page}
+{@com.github.mkouba.ddmwi.Warband warband}
+{@String hxTarget}
+{@String hxGet}
 
 {#if page.isEmpty}
 <p>No creatures found.</p>
@@ -7,9 +10,9 @@
 {/if}
 
 <div class="row row-cols-auto mb-2">
-{#each page.results}
-  {#creatureCard creature=it creatureIndex=it_index /}
-{/each}
+{#for creature in page.results}
+  {#creatureCard creature creatureIndex=creature_index warband=warband?? sortInfo=sortInfo?? query=query?? page /}
+{/for}
 </div>
 
-{#pages /}
+{#pages page hxGet hxTarget /}

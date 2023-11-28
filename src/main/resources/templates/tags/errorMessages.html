@@ -1,8 +1,7 @@
-{#if messages}
-{#each messages}
+{@Iterable<String> messages}
+{#for message in messages??}
 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-  {it.raw}
+  {message.raw}
   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
-{/each}
-{/if}
+{/for}

@@ -1,11 +1,11 @@
 {#include base}
-{#title}Your warbands <a class="fs-2 text-secondary ms-1" href="/warband-detail" title="New warband"><i class="fas fa-plus-circle"></i></a>
+{#title}Your warbands{/title}
 {#content}
 
-{#filters quickFilters=warband:quickFilters hxGet="/warband-list/page" hxTarget="#warbands" /}
+{#filters sortInfo quickFilters=warband:quickFilters hxGet="/warband-list/page" hxTarget="#warbands" /}
 
 <div id="warbands">
-{#warbandCards hxGet="/warband-list/page" hxTarget="#warbands" /}
+{#warbandCards page hxGet="/warband-list/page" hxTarget="#warbands" /}
 </div>
 
 {#script}

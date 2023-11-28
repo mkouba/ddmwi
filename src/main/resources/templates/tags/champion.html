@@ -1,7 +1,11 @@
-{#if alwaysVisible?? or it > 0}
+{@boolean alwaysVisible=false}
+{@int rating=0}
+{@String style}
+
+{#if alwaysVisible?? or rating > 0}
 &nbsp;
-<span title="Champion rating: {it}"{#if style??}style="{style}"{/if}>
-{#for i in it}
+<span title="Champion rating: {rating}"{#if style??}style="{style}"{/if}>
+{#for i in rating}
 <i class="fas fa-medal"></i>
 {#else}
 No champion present.

@@ -11,12 +11,12 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
-        <quarkus.platform.version>3.4.1</quarkus.platform.version>
+        <quarkus.platform.version>3.6.0</quarkus.platform.version>
         <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
         <dependency-plugin.version>3.2.0</dependency-plugin.version>
         <webjars.bootstrap.version>5.1.3</webjars.bootstrap.version>
         <webjar.font-awesome.version>5.15.4</webjar.font-awesome.version>
-        <webjar.htmx.version>1.8.0</webjar.htmx.version>
+        <webjar.htmx.version>1.9.9</webjar.htmx.version>
     </properties>
     <dependencyManagement>
         <dependencies>

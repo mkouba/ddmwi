@@ -1,5 +1,8 @@
 {@com.github.mkouba.ddmwi.CreatureView creature}
+{@com.github.mkouba.ddmwi.Warband warband}
 {@int creatureIndex}
+{@com.github.mkouba.ddmwi.dao.SortInfo sortInfo}
+{@String query=""}
 
 <div class="col">
     <div class="card creature-card">
@@ -11,7 +14,7 @@
                 {creature.name}
                 {/if}
                 <div class="float-end">
-                    {#alignment creature.alignment /}
+                    {#alignment alignment=creature.alignment /}
                 </div>
             </div>
             <div class="level">
@@ -48,10 +51,8 @@
                             <td class="text-center stat">WILL<br>{creature.will}</td>
                         </tr>
                         <tr>
-                            <td class="text-center stat">{#each creature.factions}<div class="mt-1">{#faction it /}</div>
-                                {/each}</td>
+                            <td class="text-center stat">{#each creature.factions}<div class="mt-1">{#faction faction=it /}</div>{/each}</td>
                         </tr>
-
                     </table>
                 </div>
                 <div class="col-9">
@@ -165,7 +166,7 @@
                 &nbsp;<span class="badge rounded-pill bg-secondary" title="Cost">{creature.cost}</span>
             </div>
             <div class="cardFloatRight">
-                {#champion creature.championRating /}
+                {#champion rating=creature.championRating /}
             </div>
         </div>
     </div>

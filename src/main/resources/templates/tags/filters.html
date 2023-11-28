@@ -1,6 +1,8 @@
-{! params: quickFilters, hxTarget, hxGet, sortInfo !}
-{! workaround for https://github.com/quarkusio/quarkus/issues/33881 !}
+{@java.util.List<java.util.Map$Entry<String,String>> quickFilters}
 {@com.github.mkouba.ddmwi.dao.SortInfo sortInfo}
+{@String query=""}
+{@String hxGet}
+{@String hxTarget}
 
 <div class="filter" style="margin-top:1em;">
     <div class="input-group mb-3">
@@ -9,7 +11,7 @@
             Quick filters
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-              {#each quickFilters.orEmpty}
+              {#each quickFilters??}
               <li><button class="dropdown-item quick-filter-button" type="button" onclick="appendToQuery('{it.value.raw}')">{it.key}</button></li>
               {/each}
             </ul>

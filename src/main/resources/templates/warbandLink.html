@@ -77,7 +77,7 @@
                 {creature.name}
                 {/if}
                 <div class="float-end">
-                    {#alignment creature.alignment /}
+                    {#alignment alignment=creature.alignment /}
                 </div>
                 </div>
             </div>
@@ -152,7 +152,7 @@
                     &nbsp;<span class="badge rounded-pill bg-secondary" title="Cost">{creature.cost}</span>
                  </div>
                  <div class="cardFloatRight">
-                    {#champion creature.championRating /}
+                    {#champion rating=creature.championRating /}
                  </div>
             </div>
         </div>

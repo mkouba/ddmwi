@@ -1,11 +1,11 @@
 {#include base}
-{#title}Creatures
+{#title}Creatures{/title}
 {#content}
 
-{#filters quickFilters=creature:quickFilters hxTarget="#creatures" hxGet="/creature-list/page" /}
+{#filters sortInfo quickFilters=creature:quickFilters hxTarget="#creatures" hxGet="/creature-list/page" /}
 
 <div id="creatures">
-  {#creatureCards hxTarget="#creatures" hxGet="/creature-list/page" /}
+  {#creatureCards page hxTarget="#creatures" hxGet="/creature-list/page" /}
 </div>
 
 {#script}
