@@ -41,7 +41,7 @@
     </div>
     <div class="row g-3 mt-1 align-items-center">
         <div class="col-8">
-            <textarea class="form-control" placeholder="Notes (max {warband:noteLimit} characters)" maxlength="{warband:noteLimit}" rows="3" name="note">{warband.note}</textarea>
+            <textarea class="form-control" placeholder="Notes (max {warband:noteLimit} characters)" maxlength="{warband:noteLimit}" rows="2" name="note">{warband.note}</textarea>
         </div>
         <div class="col-auto">
             <button type="submit" class="btn btn-secondary">Save</button>
@@ -53,27 +53,17 @@
 </form>
     
 {#if warband.id}
-<div class="row warband-details">
-    <div class="col-1 warband-attrs">
-    <table class="table table-borderless table-striped">
+<table class="table table-borderless table-striped">
         <tr>
             <td class="text-center stat">FACTIONS<br>{#factions factions=warband.baseFactions /}</td>
-        </tr>
-        <tr>
             <td class="text-center stat">ALIGNMENT<br>{#if warband.isEvil}<span class="badge bg-dark fs-6">Evil</span>{#else if warband.isGood}<span class="badge bg-light text-dark fs-6">Good</span>{#else}<span class="badge bg-secondary fs-6">Neutral</span>{/if}</td>
-        </tr>
-        <tr>
             <td class="text-center stat">TOTAL HP<br>{warband.totalHp}</td>
-        </tr>
-        <tr>
             <td class="text-center stat">HIGHEST LEVEL<br>{warband.highestLevel}</td>
-        </tr>
-        <tr>
             <td class="text-center stat">CHAMPION RATING<br>{warband.championRating}</td>
         </tr>
-    </table>
-    </div>
-    <div class="col-11 warband-cards">
+</table>
+    
+<div class="row warband-details">
     <div class="progress" style="height:2.5rem;font-size:1.6rem;">
         {#if warband.freestyle}
         <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" title="{warband.totalCost} points used">
@@ -97,7 +87,6 @@
     {#else}
     <div class="text-center text-muted fs-3 no-creatures-text">No creatures added yet. Please select a creature below...</div>
     {/if}
-    </div>
 </div>
 {/if}
 

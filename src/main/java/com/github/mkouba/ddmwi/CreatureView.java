@@ -133,4 +133,8 @@ public interface CreatureView {
     default List<CreaturePower> getAttacks() {
         return getPowers().stream().filter(CreaturePower::isAttack).collect(Collectors.toList());
     }
+    
+    default boolean hasEqualDefenses() {
+        return creature().hasEqualDefenses();
+    }
 }

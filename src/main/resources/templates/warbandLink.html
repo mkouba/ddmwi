@@ -30,7 +30,7 @@
             </tr>
             <tr>
                 <td>Factions</td>
-                <td>{#factions warband.baseFactions /}</td>
+                <td>{#factions factions=warband.baseFactions /}</td>
             </tr>
             <tr>
                 <td>Alignment</td>
@@ -107,7 +107,7 @@
                             <td class="text-center">WILL<br>{creature.will}</td>
                         </tr>
                         <tr>
-                            <td class="text-center">{#each creature.factions}<div class="mt-1">{#faction it /}</div>{/each}</td>
+                            <td class="text-center">{#for faction in creature.factions}<div class="mt-1">{#faction faction /}</div>{/for}</td>
                         </tr>
                         
                     </table>

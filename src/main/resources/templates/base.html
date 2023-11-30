@@ -12,7 +12,7 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg sticky-top navbar-dark bg-success">
+    <nav class="navbar navbar-expand-lg sticky-top navbar-dark bg-danger">
         <div class="container-fluid">
             <a class="navbar-brand" href="/" title="{app:version}"><i class="fa fa-dice-d20"></i> &nbsp; Warband Incubator</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
@@ -23,39 +23,42 @@
                 {#if user:signedIn}
                 <div class="navbar-nav">
                     <div class="nav-item btn-group">
-                        <a class="btn btn-dark bg-nav-dropdown" role="button" href="/creature-list">Creatures</a>
-                        <button type="button" class="btn btn-dark bg-dropdown-btn dropdown-toggle dropdown-toggle-split"
+                        <a class="btn btn-outline-light" role="button" href="/creature-list">Creatures</a>
+                        <button type="button" class="btn btn-outline-light dropdown-toggle dropdown-toggle-split"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <span class="visually-hidden">Toggle Dropdown</span>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-dark">
+                        <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="/collection/export" role="button" title="Export my collection to a JSON file"><i class="fas fa-file-export"></i>&nbsp; Export collection</a></li>
                             <li><a class="dropdown-item" href="/collection/import" role="button" title="Import my collection from a JSON file"><i class="fas fa-file-import"></i>&nbsp; Import collection</a></li>
                         </ul>
                     </div>
                     <span class="navbar-text">
-                    &nbsp;
+                    &nbsp;#&nbsp;
                     </span>
                     <div class="nav-item btn-group">
-                        <a class="btn btn-dark bg-nav-dropdown" role="button" href="/warband-list">Your warbands</a>
-                        <button type="button" class="btn btn-dark bg-dropdown-btn dropdown-toggle dropdown-toggle-split"
+                        <a class="btn btn-outline-light" role="button" href="/warband-list">Your warbands</a>
+                        <button type="button" class="btn btn-outline-light dropdown-toggle dropdown-toggle-split"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <span class="visually-hidden">Toggle Dropdown</span>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-dark">
+                        <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="/warband-detail">New warband</a></li>
                             <li><a class="dropdown-item" href="/warbands/export" role="button" title="Export all warbands to a JSON file"><i class="fas fa-file-export"></i>&nbsp; Export warbands</a></li>
                             <li><a class="dropdown-item" href="/warbands/import" role="button" title="Import warbands from a JSON file"><i class="fas fa-file-import"></i>&nbsp; Import warbands</a></li>
                         </ul>
                     </div>
                     {#if user:isAdmin}
+                    <span class="navbar-text">
+                    &nbsp;#&nbsp;
+                    </span>
                     <ul class="navbar-nav">
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                                aria-expanded="false">
+                            <button type="button" class="btn btn-outline-light dropdown-toggle dropdown-toggle-split"
+                            data-bs-toggle="dropdown" aria-expanded="false">
                                 Admin
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-dark">
+                            </button>
+                            <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="/dashboard">Dashboard</a></li>
                                 <li><a class="dropdown-item" href="/creature-detail">New creature</a></li>
                                 <li><a class="dropdown-item" href="/creatures/import">Import creatures</a></li>
@@ -71,7 +74,7 @@
                                 aria-expanded="false">
                                 {user:name}
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+                            <ul class="dropdown-menu dropdown-menu-end">
                                 <form action="/logout" method="POST">
                                     <button type="submit" class="dropdown-item">Sign out</button>
                                 </form>

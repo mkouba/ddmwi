@@ -87,6 +87,10 @@ public class Creature extends BaseEntity implements CreatureView {
     public Creature creature() {
         return this;
     }
+    
+    public boolean hasEqualDefenses() {
+        return ref == will && will == fort;
+    }
 
     public void addPower(CreaturePower power) {
         power.creature = this;

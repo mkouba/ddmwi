@@ -31,6 +31,10 @@ div.filter {
   float: right;
 }
 
+button.nav-link {
+    color: gray;
+}
+
 p.keywords , ul.powers {
   margin-top: 0.2rem;
   margin-bottom: 0;
@@ -39,7 +43,7 @@ p.keywords , ul.powers {
 }
 
 td.stat {
-  border-radius: 3px;
+  /*border-radius: 3px;*/
   font-size: 0.9rem;
 }
 
@@ -49,12 +53,21 @@ p.factions {
 
 .creature-card {
   width: 18rem;
+  min-height: 30rem;
+  background-image: url("/img/dragon.png");
+  background-repeat: no-repeat;
+}
+
+.warband-card {
+  width: 18rem;
+  min-height: 20rem;
   background-image: url("/img/dragon.png");
   background-repeat: no-repeat;
 }
 
 .card-header {
   font-size: 1.1em;
+  border: 0px;
 }
 
 .card-header .level {
