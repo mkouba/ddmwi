@@ -9,9 +9,9 @@
         <div class="card-header">
             <div>
                 {#if creature.name.length > 23}
-                <span title="{creature.name}">{creature.name.substring(0,23)}...</span>
+                <span title="{creature.name} [{creature.setInfo}]">{creature.name.substring(0,23)}...</span>
                 {#else}
-                {creature.name}
+                <span title="{creature.name} [{creature.setInfo}]">{creature.name}</span>
                 {/if}
                 <div class="float-end">
                     {#alignment alignment=creature.alignment /}
@@ -65,14 +65,14 @@
                       {#if creature.isChampion}
                       <li class="nav-item" role="presentation">
                         <button class="nav-link" id="champs{#if warbandSelected??}_w{/if}_{creatureIndex}-tab" data-bs-toggle="tab" data-bs-target="#champs{#if warbandSelected??}_w{/if}_{creatureIndex}" type="button" role="tab" aria-selected="false" title="Champion powers">
-                            <i class="fas fa-medal"></i>
+                            <i class="fas fa-medal"></i> &nbsp;<span class="badge rounded-pill bg-secondary" title="Champion rating">{creature.championRating}</span>
                         </button>
                       </li>
                       {/if}
-                      <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="setInfo{#if warbandSelected??}_w{/if}_{creatureIndex}-tab" data-bs-toggle="tab" data-bs-target="#setInfo{#if warbandSelected??}_w{/if}_{creatureIndex}" type="button" role="tab" aria-selected="false" title="Set info">
-                            <i class="fas fa-box"></i>
-                        </button>
+                      <li class="nav-item">
+                        <a class="nav-link" href="https://www.google.com/search?q={creature.searchQuery}&tbm=isch" target="_blank" title="Search images on google">
+                            <i class="fas fa-external-link-alt"></i>
+                        </a>
                       </li>
                     </ul>
 
@@ -109,13 +109,7 @@
                           </ul>
                       </div>
                       {/if}
-                      <div class="tab-pane fade" id="setInfo{#if warbandSelected??}_w{/if}_{creatureIndex}" role="tabpanel" aria-labelledby="setInfo{#if warbandSelected??}_w{/if}_{creatureIndex}-tab">
-                         <p class="mt-2">Set: {creature.setInfo}</p>
-                         <a href="https://www.google.com/search?q={creature.searchQuery}&tbm=isch" class="btn btn-outline-secondary btn-sm mt-2" target="_blank">Search images&nbsp;&nbsp;<i class="fas fa-external-link-alt"></i></a>
-                      </div>
-                      
                     </div>
-                    
                 </div>
         </div>
         <div class="card-footer text-muted">
@@ -155,12 +149,13 @@
                 </button>
             </div>
             {/if}
+            
             <div class="cardFloatRight">
                 &nbsp;<span class="badge rounded-pill bg-secondary" title="Cost">{creature.cost}</span>
             </div>
-            <div class="cardFloatRight">
+            <!--div class="cardFloatRight">
                 {#champion rating=creature.championRating /}
-            </div>
+            </div-->
         </div>
     </div>
 </div>

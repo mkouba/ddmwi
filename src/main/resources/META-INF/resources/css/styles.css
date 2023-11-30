@@ -47,6 +47,10 @@ td.stat {
   font-size: 0.9rem;
 }
 
+span.stat-val {
+    color: #5c636a;
+}
+
 p.factions {
   margin-bottom: 0.5rem;  
 }
