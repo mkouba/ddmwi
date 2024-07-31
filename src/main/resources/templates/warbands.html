@@ -1,5 +1,5 @@
 {#include base}
-{#title}Your warbands{/title}
+{#title}Warbands{/title}
 {#content}
 
 {#filters sortInfo quickFilters=warband:quickFilters hxGet="/warband-list/page" hxTarget="#warbands" /}
@@ -8,7 +8,7 @@
 {#warbandCards page hxGet="/warband-list/page" hxTarget="#warbands" /}
 </div>
 
-{#script}
+{#js-bottom}
 const buttonClear = document.querySelector("#buttonClear");
 const queryInput = document.querySelector("#inputFilter");
 

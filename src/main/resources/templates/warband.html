@@ -101,7 +101,7 @@
 
 {/if}
 
-{#script}
+{#js-bottom}
 const buttonClear = document.querySelector("#buttonClear");
 const queryInput = document.querySelector("#inputFilter");
 
@@ -127,12 +127,12 @@ function toggleCollection(creatureId) {
         const toggle = document.querySelector('#toggle_' + creatureId);
         const toggleButton = document.querySelector('#toggle-btn_' + creatureId);
         if (response.status === 200 && toggle && toggleButton) {
-            if (toggle.className.indexOf("fa-toggle-on") != -1) {
-                toggle.className = "fas fa-toggle-off";
-                toggleButton.className = "btn btn-outline-secondary";
+            if (toggle.getAttribute("class").indexOf("fa-toggle-on") != -1) {
+                toggle.setAttribute("class", "fas fa-toggle-off");
+                toggleButton.className = "btn btn-sm btn-outline-secondary";
             } else {
-                toggle.className = "fas fa-toggle-on";
-                toggleButton.className = "btn btn-secondary";
+                toggle.setAttribute("class", "fas fa-toggle-on");
+                toggleButton.className = "btn btn-sm btn-secondary";
             }    
         } else {
             alert('Unable to toggle collection for creature: ' + creatureId);

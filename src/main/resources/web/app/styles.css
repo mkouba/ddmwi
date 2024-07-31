@@ -17,6 +17,10 @@ h3 {
   padding-right: 2em;
 }
 
+nav.navbar {
+    background-image: url("/static/background.jpg");
+}
+
 div.filter {
   margin-bottom: 1em;
 }
@@ -58,14 +62,14 @@ p.factions {
 .creature-card {
   width: 18rem;
   min-height: 30rem;
-  background-image: url("/img/dragon.png");
+  background-image: url("/static/dragon.png");
   background-repeat: no-repeat;
 }
 
 .warband-card {
   width: 18rem;
   min-height: 20rem;
-  background-image: url("/img/dragon.png");
+  background-image: url("/static/dragon.png");
   background-repeat: no-repeat;
 }
 
@@ -88,6 +92,14 @@ p.factions {
 
 .card-body table {
   margin:0;
+}
+
+.card-body a.img-search-link {
+    color: gray;
+}
+
+.card-body a.img-search-link:hover {
+    color: blue;
 }
 
 .card-footer {

@@ -49,7 +49,7 @@
                 
                 <div class="row">
                     
-                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <ul class="nav nav-tabs" id="creatureTab" role="tablist">
                       <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="attacks{#if warbandSelected??}_w{/if}_{creatureIndex}-tab" data-bs-toggle="tab" data-bs-target="#attacks{#if warbandSelected??}_w{/if}_{creatureIndex}" type="button" role="tab" aria-selected="true" title="Attacks">
                             &nbsp;<i class="fas fa-bolt"></i>
@@ -70,7 +70,7 @@
                       </li>
                       {/if}
                       <li class="nav-item">
-                        <a class="nav-link" href="https://www.google.com/search?q={creature.searchQuery}&tbm=isch" target="_blank" title="Search images on google">
+                        <a class="nav-link img-search-link" href="https://www.google.com/search?q={creature.searchQuery}&tbm=isch" target="_blank" title="Search images on google">
                             <i class="fas fa-external-link-alt"></i>
                         </a>
                       </li>
