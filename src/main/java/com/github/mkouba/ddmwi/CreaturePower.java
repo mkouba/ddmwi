@@ -54,9 +54,9 @@ public class CreaturePower extends BaseEntity {
 
     @TemplateEnum
     public enum PowerType {
+        ATTACK,
         ABILITY,
         SPECIAL,
-        ATTACK,
         CHAMPION
     }
 }

@@ -17,12 +17,21 @@ public class WarbandCreature extends BaseEntity implements CreatureView {
     @JoinColumn(name = "creature_id")
     public Creature creature;
 
+    /**
+     * Warband UI position - creatures are sorted by position ASC
+     */
+    public Integer position;
+
     public Warband getWarband() {
         return warband;
     }
 
     public Creature getCreature() {
         return creature;
+    }
+
+    public Integer getPosition() {
+        return position;
     }
 
     @Override
@@ -33,6 +42,15 @@ public class WarbandCreature extends BaseEntity implements CreatureView {
     @Override
     public Creature creature() {
         return creature;
+    }
+
+    @Override
+    public WarbandCreature asWarbandCreature() {
+        return this;
+    }
+
+    public boolean hasPosition() {
+        return position != null;
     }
 
 }

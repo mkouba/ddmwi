@@ -73,6 +73,10 @@ p.factions {
   background-repeat: no-repeat;
 }
 
+.warband-stats {
+    margin: auto;
+}
+
 .card-header {
   font-size: 1.1em;
   border: 0px;
@@ -161,22 +165,25 @@ p.factions {
     padding-left: 1rem;
 }
 
+.warband-progress {
+    padding: 0;
+}
 
 .warband-attrs {
   font-size: 0.9rem;
   padding: 1rem;
-  /*background-color: rgb(222, 226, 230);*/
   border-radius: 6px 0px 0px 6px;
 }
 
 .warband-cards {
-    /*background-color: rgb(222, 226, 230);*/
-    border-radius: 0px 6px 6px 0px;
+    border-radius: 6px;
     padding: 1rem;
+    margin: auto;
+    background-image: url('/static/wood.png');
 }
 
 .warband-details {
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
 .warband-attr-value {
@@ -277,10 +284,6 @@ div.col {
 
 .page-link { 
   cursor: pointer;
-}
-
-.progress {
-  font-size: 0.9rem;
 }
 
 textarea.form-control {

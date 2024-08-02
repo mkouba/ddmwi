@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -24,6 +25,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotEmpty;
@@ -41,6 +43,7 @@ public class Warband extends BaseEntity {
     public String name;
 
     @OneToMany(mappedBy = "warband", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("position asc")
     public List<WarbandCreature> creatures;
 
     @Enumerated(EnumType.STRING)
@@ -57,10 +60,10 @@ public class Warband extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     public User user;
-    
+
     @Column(name = "public_link")
     public boolean publicLink;
-    
+
     /**
      * A freestyle warband does not impose any rules and restrictions on how to be built (incl. factions and point limit)
      */
@@ -80,11 +83,11 @@ public class Warband extends BaseEntity {
         public final int value;
         public final int numberOfCreatures;
     }
-    
+
     public boolean isGood() {
         return getAlignment() == Alignment.GOOD;
     }
-    
+
     public boolean isEvil() {
         return getAlignment() == Alignment.EVIL;
     }
@@ -198,12 +201,18 @@ public class Warband extends BaseEntity {
                 }
             }
         }
+        int position;
         if (creatures == null) {
             creatures = new ArrayList<>();
+            position = 0;
+        } else {
+            position = creatures.stream().filter(WarbandCreature::hasPosition).mapToInt(WarbandCreature::getPosition).max()
+                    .orElseThrow() + 1;
         }
         WarbandCreature warbandCreature = new WarbandCreature();
         warbandCreature.warband = this;
         warbandCreature.creature = creature;
+        warbandCreature.position = position;
         creatures.add(warbandCreature);
         return this;
     }
@@ -214,6 +223,83 @@ public class Warband extends BaseEntity {
 
     public void removeCreature(long id) {
         creatures.removeIf(c -> c.id == id);
+    }
+
+    public boolean canMoveLeft(long warbandCreatureId) {
+        WarbandCreature prev = null;
+        for (ListIterator<WarbandCreature> it = creatures.listIterator(); it.hasNext();) {
+            WarbandCreature c = it.next();
+            if (c.id.equals(warbandCreatureId)) {
+                return prev != null;
+            }
+            prev = c;
+        }
+        return false;
+    }
+
+    public boolean canMoveRight(long warbandCreatureId) {
+        for (ListIterator<WarbandCreature> it = creatures.listIterator(); it.hasNext();) {
+            WarbandCreature c = it.next();
+            if (c.id.equals(warbandCreatureId)) {
+                return it.hasNext();
+            }
+        }
+        return false;
+    }
+
+    public void moveLeft(long warbandCreatureId) {
+        WarbandCreature prev = null;
+        for (ListIterator<WarbandCreature> it = creatures.listIterator(); it.hasNext();) {
+            WarbandCreature c = it.next();
+            if (c.id.equals(warbandCreatureId)) {
+                if (prev != null) {
+                    Integer currentPosition = c.position;
+                    Integer prevPosition = prev.position;
+                    if (prevPosition == null) {
+                        if (currentPosition != null) {
+                            prevPosition = currentPosition - 1;
+                        } else {
+                            // Both positions are null
+                            prevPosition = 1;
+                            currentPosition = 0;
+                        }
+                    } else if (currentPosition == null && prevPosition != null) {
+                        currentPosition = prevPosition + 1;
+                    }
+                    c.position = prevPosition;
+                    prev.position = currentPosition;
+                }
+                break;
+            }
+            prev = c;
+        }
+    }
+
+    public void moveRight(long warbandCreatureId) {
+        for (ListIterator<WarbandCreature> it = creatures.listIterator(); it.hasNext();) {
+            WarbandCreature c = it.next();
+            if (c.id.equals(warbandCreatureId)) {
+                if (it.hasNext()) {
+                    Integer currentPosition = c.position;
+                    WarbandCreature next = it.next();
+                    Integer nextPosition = next.position;
+                    if (nextPosition == null) {
+                        if (currentPosition != null) {
+                            nextPosition = currentPosition + 1;
+                        } else {
+                            // Both positions are null
+                            nextPosition = 0;
+                            currentPosition = 1;
+                        }
+                    } else if (currentPosition == null && nextPosition != null) {
+                        currentPosition = nextPosition - 1;
+                    }
+                    c.position = nextPosition;
+                    next.position = currentPosition;
+                }
+                break;
+            }
+        }
     }
 
     public Warband setUser(Long userId) {

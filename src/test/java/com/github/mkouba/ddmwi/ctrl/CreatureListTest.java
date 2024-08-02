@@ -7,19 +7,17 @@ import org.junit.jupiter.api.Test;
 
 import com.github.mkouba.ddmwi.Creature;
 import com.github.mkouba.ddmwi.CreatureTest;
-import com.github.mkouba.ddmwi.TransactionUniAsserterInterceptor;
 
+import io.quarkus.test.hibernate.reactive.panache.TransactionalUniAsserter;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.vertx.RunOnVertxContext;
-import io.quarkus.test.vertx.UniAsserter;
 
 @QuarkusTest
 public class CreatureListTest extends ControllerTest {
 
     @RunOnVertxContext
     @Test
-    public void testList(UniAsserter asserter) {
-        asserter = new TransactionUniAsserterInterceptor(asserter);
+    public void testList(TransactionalUniAsserter asserter) {
         asserter.execute(() -> createUsers(fooUser -> CreatureTest.creature("Rask")
                 .good().cost(50).attr(c -> c.ac = 22).civilization().wild().build().persist()
                 .chain(c1 -> CreatureTest.creature("Goristro")

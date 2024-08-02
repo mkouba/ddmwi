@@ -1,6 +1,7 @@
 package com.github.mkouba.ddmwi;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
@@ -95,6 +96,10 @@ public class Creature extends BaseEntity implements CreatureView {
     public void addPower(CreaturePower power) {
         power.creature = this;
         powers.add(power);
+    }
+    
+    public List<CreaturePower> getSortedPowers() {
+        return powers.stream().sorted(Comparator.comparing(CreaturePower::getType)).toList();
     }
 
     @Override

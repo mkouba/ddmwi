@@ -13,7 +13,6 @@ import com.github.mkouba.ddmwi.Creature.Faction;
 import io.quarkus.test.hibernate.reactive.panache.TransactionalUniAsserter;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.vertx.RunOnVertxContext;
-import io.quarkus.test.vertx.UniAsserter;
 import jakarta.inject.Inject;
 import jakarta.persistence.PersistenceException;
 
@@ -36,8 +35,7 @@ public class CreatureTest {
 
     @RunOnVertxContext
     @Test
-    public void testUniqueConstraint(UniAsserter asserter) {
-        asserter = new TransactionUniAsserterInterceptor(asserter);
+    public void testUniqueConstraint(TransactionalUniAsserter asserter) {
         asserter.execute(() -> Creature.persist(creature("Angel").good().cost(50).civilization().wild().build()))
                 .assertFailedWith(() -> Creature.persist(creature("Angel").evil().cost(150).civilization().build()),
                         PersistenceException.class)

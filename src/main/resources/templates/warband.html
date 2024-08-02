@@ -53,6 +53,7 @@
 </form>
     
 {#if warband.id}
+<div class="row">
 <table class="table table-borderless table-striped">
         <tr>
             <td class="text-center stat">FACTIONS<br>{#factions factions=warband.baseFactions /}</td>
@@ -62,9 +63,10 @@
             <td class="text-center stat">CHAMPION RATING<br>{warband.championRating}</td>
         </tr>
 </table>
+</div>
     
-<div class="row warband-details">
-    <div class="progress" style="height:2.5rem;font-size:1.6rem;">
+<div class="row">
+    <div class="progress warband-progress" style="height:2.5rem;font-size:1.6rem;">
         {#if warband.freestyle}
         <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" title="{warband.totalCost} points used">
           {warband.totalCost}
@@ -78,8 +80,9 @@
         </div>
         {/if}
     </div>
+    <hr>
     {#if warband.creatures}
-    <div class="row row-cols-auto mb-2">
+    <div class="row row-cols-auto mb-2 warband-cards">
         {#for creature in warband.creatures}
             {#creatureCard warband sortInfo query page creature creatureIndex=creature_index warbandSelected=true /}
         {/for}

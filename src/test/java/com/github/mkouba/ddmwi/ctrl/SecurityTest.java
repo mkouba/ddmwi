@@ -3,24 +3,18 @@ package com.github.mkouba.ddmwi.ctrl;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.List;
-import java.util.function.Function;
-
 import org.junit.jupiter.api.Test;
 
-import com.github.mkouba.ddmwi.TransactionUniAsserterInterceptor;
-
+import io.quarkus.test.hibernate.reactive.panache.TransactionalUniAsserter;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.vertx.RunOnVertxContext;
-import io.quarkus.test.vertx.UniAsserter;
 
 @QuarkusTest
 public class SecurityTest extends ControllerTest {
 
     @RunOnVertxContext
     @Test
-    public void testLoginRedirect(UniAsserter asserter) {
-        asserter = new TransactionUniAsserterInterceptor(asserter);
+    public void testLoginRedirect(TransactionalUniAsserter asserter) {
         asserter
                 .execute(() -> createUsers())
                 .execute(() -> executeBlocking(() -> {

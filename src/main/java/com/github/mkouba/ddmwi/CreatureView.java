@@ -26,6 +26,10 @@ public interface CreatureView {
     default boolean isWarbandCreature() {
         return false;
     }
+    
+    default WarbandCreature asWarbandCreature() {
+        throw new IllegalArgumentException();
+    }
 
     default String getName() {
         return creature().name;

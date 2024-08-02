@@ -5,7 +5,7 @@
 {@String query=""}
 
 <div class="col">
-    <div class="card creature-card">
+    <div class="card creature-card h-100">
         <div class="card-header">
             <div>
                 {#if creature.name.length > 23}
@@ -23,116 +23,147 @@
                 {#if it_hasNext}{#separator /}{/if}
                 {/each}
             </div>
+     
+            <table class="table table-sm table-borderless table-striped">
+                <tr>
+                    <td class="text-center stat">LEVEL<br>{creature.level}</td>
+                    <td class="text-center stat">HP<br>{creature.hp}</td>
+                    <td class="text-center stat">SPEED<br>{creature.speed} {#if creature.isFlying}&nbsp;<span
+                            title="Flying"><i class="fas fa-feather"></i></span>{/if}</td>
+                    <td class="text-center stat">{#each creature.factions}{#faction faction=it /} {/each}</td>
+                </tr>
+                <tr>
+                    <td class="text-center stat">AC<br>{creature.ac}</td>
+                    {#if creature.hasEqualDefenses}
+                    <td class="text-center stat" title="FORT/REF/WILL">DEF<br>{creature.fort}</td>
+                    {#else}
+                    <td class="text-center stat">FORT<br>{creature.fort}</td>
+                    <td class="text-center stat">REF<br>{creature.ref}</td>
+                    <td class="text-center stat">WILL<br>{creature.will}</td>
+                    {/if}
+                </tr>
+            </table>
         </div>
-        <div class="card-body">
-            <div class="row">
-               <table class="table table-sm table-borderless table-striped">
-                        <tr>
-                            <td class="text-center stat">LEVEL<br>{creature.level}</td>
-                            <td class="text-center stat">HP<br>{creature.hp}</td>
-                            <td class="text-center stat">SPEED<br>{creature.speed} {#if creature.isFlying}&nbsp;<span
-                                    title="Flying"><i class="fas fa-feather"></i></span>{/if}</td>
-                             <td class="text-center stat">{#each creature.factions}{#faction faction=it /} {/each}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-center stat">AC<br>{creature.ac}</td>
-                            {#if creature.hasEqualDefenses}
-                            <td class="text-center stat" title="FORT/REF/WILL">DEF<br>{creature.fort}</td>
-                            {#else}
-                            <td class="text-center stat">FORT<br>{creature.fort}</td>
-                            <td class="text-center stat">REF<br>{creature.ref}</td>
-                            <td class="text-center stat">WILL<br>{creature.will}</td>
-                            {/if}
-                        </tr>
-                    </table>
-                </div>
-                
-                <div class="row">
-                    
-                    <ul class="nav nav-tabs" id="creatureTab" role="tablist">
-                      <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="attacks{#if warbandSelected??}_w{/if}_{creatureIndex}-tab" data-bs-toggle="tab" data-bs-target="#attacks{#if warbandSelected??}_w{/if}_{creatureIndex}" type="button" role="tab" aria-selected="true" title="Attacks">
-                            &nbsp;<i class="fas fa-bolt"></i>
-                        </button>
-                      </li>
-                      {#if creature.generalPowers}
-                      <li class="nav-item" role="presentation">
-                        <button class="nav-link btn-secondary" id="powers{#if warbandSelected??}_w{/if}_{creatureIndex}-tab" data-bs-toggle="tab" data-bs-target="#powers{#if warbandSelected??}_w{/if}_{creatureIndex}" type="button" role="tab" aria-selected="false" title="General powers">
-                            <i class="fas fa-magic"></i>
-                        </button>
-                      </li>
-                      {/if}
-                      {#if creature.isChampion}
-                      <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="champs{#if warbandSelected??}_w{/if}_{creatureIndex}-tab" data-bs-toggle="tab" data-bs-target="#champs{#if warbandSelected??}_w{/if}_{creatureIndex}" type="button" role="tab" aria-selected="false" title="Champion powers">
-                            <i class="fas fa-medal"></i> &nbsp;<span class="badge rounded-pill bg-secondary" title="Champion rating">{creature.championRating}</span>
-                        </button>
-                      </li>
-                      {/if}
-                      <li class="nav-item">
-                        <a class="nav-link img-search-link" href="https://www.google.com/search?q={creature.searchQuery}&tbm=isch" target="_blank" title="Search images on google">
-                            <i class="fas fa-external-link-alt"></i>
-                        </a>
-                      </li>
-                    </ul>
 
-                    <div class="tab-content" id="tabs{#if warbandSelected??}_w{/if}_{creatureIndex}">
-                        
-                      <div class="tab-pane fade show active" id="attacks{#if warbandSelected??}_w{/if}_{creatureIndex}" role="tabpanel" aria-labelledby="attacks{#if warbandSelected??}_w{/if}_{creatureIndex}-tab">
-                           <ul class="powers">
-                            {#each creature.attacks}
-                            <li>{#creaturePowerLimit limit=it.usageLimit /}{it.filteredText.raw}</li>
-                            {#else}
-                            <li>No attacks</li>
-                            {/each}
-                           </ul>
-                      </div>
-                      {#if creature.generalPowers}
-                      <div class="tab-pane fade" id="powers{#if warbandSelected??}_w{/if}_{creatureIndex}" role="tabpanel" aria-labelledby="powers{#if warbandSelected??}_w{/if}_{creatureIndex}-tab">
-                          <ul class="powers">
-                            {#each creature.generalPowers}
-                            <li>{#creaturePowerLimit limit=it.usageLimit /}{it.filteredText.raw}</li>
-                            {#else}
-                            <li>No powers</li>
-                            {/each}
-                        </ul>
-                      </div>
-                      {/if}
-                      {#if creature.isChampion}
-                      <div class="tab-pane fade" id="champs{#if warbandSelected??}_w{/if}_{creatureIndex}" role="tabpanel" aria-labelledby="champs{#if warbandSelected??}_w{/if}_{creatureIndex}-tab">
-                         <ul class="powers">
-                            {#each creature.championPowers}
-                            <li>{it.text}</li>
-                            {#else}
-                            <li>No champion powers</li>
-                            {/each}
-                          </ul>
-                      </div>
-                      {/if}
-                    </div>
+        <div class="card-body">
+
+            <ul class="nav nav-tabs" id="creatureTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="attacks{#if warbandSelected??}_w{/if}_{creatureIndex}-tab"
+                        data-bs-toggle="tab" data-bs-target="#attacks{#if warbandSelected??}_w{/if}_{creatureIndex}"
+                        type="button" role="tab" aria-selected="true" title="Attacks">
+                        &nbsp;<i class="fas fa-bolt"></i>
+                    </button>
+                </li>
+                {#if creature.generalPowers}
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link btn-secondary" id="powers{#if warbandSelected??}_w{/if}_{creatureIndex}-tab"
+                        data-bs-toggle="tab" data-bs-target="#powers{#if warbandSelected??}_w{/if}_{creatureIndex}"
+                        type="button" role="tab" aria-selected="false" title="General powers">
+                        <i class="fas fa-magic"></i>
+                    </button>
+                </li>
+                {/if}
+                {#if creature.isChampion}
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="champs{#if warbandSelected??}_w{/if}_{creatureIndex}-tab"
+                        data-bs-toggle="tab" data-bs-target="#champs{#if warbandSelected??}_w{/if}_{creatureIndex}"
+                        type="button" role="tab" aria-selected="false" title="Champion powers">
+                        <i class="fas fa-medal"></i> &nbsp;<span class="badge rounded-pill bg-secondary"
+                            title="Champion rating">{creature.championRating}</span>
+                    </button>
+                </li>
+                {/if}
+                <li class="nav-item">
+                    <a class="nav-link img-search-link"
+                        href="https://www.google.com/search?q={creature.searchQuery}&tbm=isch" target="_blank"
+                        title="Search images on google">
+                        <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="tabs{#if warbandSelected??}_w{/if}_{creatureIndex}">
+
+                <div class="tab-pane fade show active" id="attacks{#if warbandSelected??}_w{/if}_{creatureIndex}"
+                    role="tabpanel" aria-labelledby="attacks{#if warbandSelected??}_w{/if}_{creatureIndex}-tab">
+                    <ul class="powers">
+                        {#each creature.attacks}
+                        <li>{#creaturePowerLimit limit=it.usageLimit /}{it.filteredText.raw}</li>
+                        {#else}
+                        <li>No attacks</li>
+                        {/each}
+                    </ul>
                 </div>
+                {#if creature.generalPowers}
+                <div class="tab-pane fade" id="powers{#if warbandSelected??}_w{/if}_{creatureIndex}" role="tabpanel"
+                    aria-labelledby="powers{#if warbandSelected??}_w{/if}_{creatureIndex}-tab">
+                    <ul class="powers">
+                        {#each creature.generalPowers}
+                        <li>{#creaturePowerLimit limit=it.usageLimit /}{it.filteredText.raw}</li>
+                        {#else}
+                        <li>No powers</li>
+                        {/each}
+                    </ul>
+                </div>
+                {/if}
+                {#if creature.isChampion}
+                <div class="tab-pane fade" id="champs{#if warbandSelected??}_w{/if}_{creatureIndex}" role="tabpanel"
+                    aria-labelledby="champs{#if warbandSelected??}_w{/if}_{creatureIndex}-tab">
+                    <ul class="powers">
+                        {#each creature.championPowers}
+                        <li>{it.text}</li>
+                        {#else}
+                        <li>No champion powers</li>
+                        {/each}
+                    </ul>
+                </div>
+                {/if}
+            </div>
         </div>
         <div class="card-footer text-muted">
             {#if !warband?? && user:isAdmin}
             <div class="cardFloatLeft">
-            <a class="btn btn-sm btn-secondary"
-                href="/creature-detail/{creature.creatureId}{#if warband??}?warbandId={warband.id}{/if}" role="button"
-                title="Edit"><i class="far fa-edit"></i></a>
+                <a class="btn btn-sm btn-secondary"
+                    href="/creature-detail/{creature.creatureId}{#if warband??}?warbandId={warband.id}{/if}"
+                    role="button" title="Edit"><i class="far fa-edit"></i></a>
             </div>
             {/if}
             {#if warband??}
             {#if warbandSelected??}
             <form method="post" action="/warband-detail/{warband.id}/remove-creature/{creature.id}"
                 class="cardFloatLeft">
-                <input type="hidden" name="queryStr" value="q={query}&sortBy={sortInfo.encodedSelected}&page={page.index}">
-                <button class="btn btn-sm btn-secondary" title="Remove">
+                <input type="hidden" name="queryStr"
+                    value="q={query}&sortBy={sortInfo.encodedSelected}&page={page.index}">
+                <button class="btn btn-sm btn-secondary" title="Remove from the warband">
                     <i class="fas fa-user-minus"></i>
                 </button>
             </form>
+            {#if warband.canMoveLeft(creature.asWarbandCreature.id)}
+            <form method="post" action="/warband-detail/{warband.id}/move-left/{creature.asWarbandCreature.id}"
+                class="cardFloatLeft">
+                <input type="hidden" name="queryStr"
+                    value="q={query}&sortBy={sortInfo.encodedSelected}&page={page.index}">
+                <button class="btn btn-sm btn-secondary" title="Move left">
+                    <i class="fas fa-chevron-circle-left"></i>
+                </button>
+            </form>
+            {/if}
+            {#if warband.canMoveRight(creature.asWarbandCreature.id)}
+            <form method="post" action="/warband-detail/{warband.id}/move-right/{creature.asWarbandCreature.id}"
+                class="cardFloatLeft">
+                <input type="hidden" name="queryStr"
+                    value="q={query}&sortBy={sortInfo.encodedSelected}&page={page.index}">
+                <button class="btn btn-sm btn-secondary" title="Move right">
+                    <i class="fas fa-chevron-circle-right"></i>
+                </button>
+            </form>
+            {/if}
             {#else if warband.canAddCreature}
             <form method="post" action="/warband-detail/{warband.id}/add-creature/{creature.creatureId}"
                 class="cardFloatLeft">
-                <input type="hidden" name="queryStr" value="q={query}&sortBy={sortInfo.encodedSelected}&page={page.index}">
+                <input type="hidden" name="queryStr"
+                    value="q={query}&sortBy={sortInfo.encodedSelected}&page={page.index}">
                 <button class="btn btn-sm btn-secondary" title="Add to the warband">
                     <i class="fas fa-user-plus"></i>
                 </button>
@@ -149,9 +180,9 @@
                 </button>
             </div>
             {/if}
-            
+
             <div class="cardFloatRight">
-                &nbsp;<span class="badge rounded-pill bg-secondary" title="Cost">{creature.cost}</span>
+                &nbsp;<span class="badge rounded-pill text-bg-secondary" title="Cost"><i class="fas fa-coins"></i> {creature.cost}</span>
             </div>
             <!--div class="cardFloatRight">
                 {#champion rating=creature.championRating /}

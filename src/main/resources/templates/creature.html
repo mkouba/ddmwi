@@ -42,6 +42,22 @@
     <input type="text" class="form-control" id="inputSpeed" name="speed" value="{creature.speed}">
   </div>
   <div class="col-md-3">
+      <label for="inputAc" class="form-label">AC</label>
+      <input type="text" class="form-control" id="inputAc" name="ac" value="{creature.ac}">
+    </div>
+    <div class="col-md-3">
+      <label for="inputFort" class="form-label">FORT</label>
+      <input type="text" class="form-control" id="inputFort" name="fort" value="{creature.fort}">
+    </div>
+    <div class="col-md-3">
+      <label for="inputRef" class="form-label">REF</label>
+      <input type="text" class="form-control" id="inputRef" name="ref" value="{creature.ref}">
+    </div>
+    <div class="col-md-3">
+      <label for="inputWill" class="form-label">WILL</label>
+      <input type="text" class="form-control" id="inputWill" name="will" value="{creature.will}">
+    </div>
+  <div class="col-md-3">
     <label for="inputMovement" class="form-label">Movement mode</label>
     <select id="inputMovement" name="movementMode" class="form-select">
     {#each MovementMode:values}
@@ -49,27 +65,11 @@
     {/each}
     </select>
   </div>
-  <div class="col-md-12">
+  <div class="col-md-6">
     <label for="inputKeywords" class="form-label">Keywords</label>
     <input type="text" class="form-control" id="inputKeywords" name="keywords" value="{creature.keywords}">
   </div>
   <div class="col-md-3">
-    <label for="inputAc" class="form-label">AC</label>
-    <input type="text" class="form-control" id="inputAc" name="ac" value="{creature.ac}">
-  </div>
-  <div class="col-md-3">
-    <label for="inputFort" class="form-label">FORT</label>
-    <input type="text" class="form-control" id="inputFort" name="fort" value="{creature.fort}">
-  </div>
-  <div class="col-md-3">
-    <label for="inputRef" class="form-label">REF</label>
-    <input type="text" class="form-control" id="inputRef" name="ref" value="{creature.ref}">
-  </div>
-  <div class="col-md-3">
-    <label for="inputWill" class="form-label">WILL</label>
-    <input type="text" class="form-control" id="inputWill" name="will" value="{creature.will}">
-  </div>
-  <div class="col-md-6">
     <label for="inputFactions" class="form-label">Factions</label>
     <select id="inputFactions" name="factions" class="form-select" multiple aria-label="multiple select example">
     {#each Faction:values}
@@ -87,24 +87,22 @@
 
 <h2>Powers</h2>
 
-{#for power in creature.powers}
+{#for power in creature.sortedPowers}
 <div>
   <form method="post" action="/creature-detail/{creature.id}/update-power/{power.id}">
-    <div class="row g-3 align-items-center">
+    <div class="row g-3 align-items-center m-1">
       <div class="col-auto">
-        <label for="power_type_{power_index}" class="form-label">Type</label>
-        <select id="power_type_{power_index}" name="type" class="form-select">
+        <select id="power_type_{power_index}" name="type" class="form-select" title="Type">
         {#each PowerType:values}
         <option value="{it}"{#if it is power.type} selected{/if}>{it}</option>
         {/each}
         </select>
       </div>
-      <div class="col-md-6">
-        <textarea class="form-control" id="power_text_{power_index}" rows="2" name="text">{power.text}</textarea>
+      <div class="col-8">
+        <textarea class="form-control" id="power_text_{power_index}" rows="1" name="text">{power.text}</textarea>
       </div>
-      <div class="col-md-2">
-        <label for="power_limit_{power_index}" class="form-label">Limit</label>
-        <input type="number" class="form-control" id="power_limit_{power_index}" name="limit" value="{power.usageLimit}">
+      <div class="col-auto">
+        <input type="number" class="form-control" id="power_limit_{power_index}" name="limit" value="{power.usageLimit}" title="Limit">
       </div>
       <div class="col-auto">
         <button type="submit" class="btn btn-secondary">Update</button>

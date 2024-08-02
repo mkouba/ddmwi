@@ -166,4 +166,24 @@ public class WarbandDetail extends Controller {
         return Warband.deleteById(id).map(result -> RestResponse.seeOther(listUri));
     }
 
+    @WithTransaction
+    @POST
+    @Path("{id}/move-left/{warbandCreatureId}")
+    public Uni<RestResponse<Object>> moveLeft(@RestPath Long id, @RestPath Long warbandCreatureId, @RestForm String queryStr) {
+        URI requestUri = uriFrom(PATH + "/" + id, queryStr);
+        return warbandDao.findWarband(id).onItem().ifNotNull().invoke(w -> {
+            w.moveLeft(warbandCreatureId);
+        }).onItem().ifNotNull().transform(e -> RestResponse.seeOther(requestUri));
+    }
+
+    @WithTransaction
+    @POST
+    @Path("{id}/move-right/{warbandCreatureId}")
+    public Uni<RestResponse<Object>> moveRight(@RestPath Long id, @RestPath Long warbandCreatureId, @RestForm String queryStr) {
+        URI requestUri = uriFrom(PATH + "/" + id, queryStr);
+        return warbandDao.findWarband(id).onItem().ifNotNull().invoke(w -> {
+            w.moveRight(warbandCreatureId);
+        }).onItem().ifNotNull().transform(e -> RestResponse.seeOther(requestUri));
+    }
+
 }

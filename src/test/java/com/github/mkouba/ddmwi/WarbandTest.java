@@ -11,9 +11,9 @@ import org.junit.jupiter.api.Test;
 import com.github.mkouba.ddmwi.User.Role;
 import com.github.mkouba.ddmwi.Warband.PointLimit;
 
+import io.quarkus.test.hibernate.reactive.panache.TransactionalUniAsserter;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.vertx.RunOnVertxContext;
-import io.quarkus.test.vertx.UniAsserter;
 import io.smallrye.mutiny.Uni;
 import jakarta.persistence.PersistenceException;
 
@@ -35,6 +35,9 @@ public class WarbandTest {
         assertFalse(quick.factionsMatch(invalidFaction.factions));
         assertFalse(quick.isAlignmentOk(wrongAlignment));
 
+        assertEquals(1, quick.creatures.size());
+        assertEquals(0, quick.creatures.get(0).position);
+
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> quick.addCreature(pointLimit))
                 .withMessage(
@@ -51,8 +54,7 @@ public class WarbandTest {
 
     @RunOnVertxContext
     @Test
-    public void testPersist(UniAsserter asserter) {
-        asserter = new TransactionUniAsserterInterceptor(asserter);
+    public void testPersist(TransactionalUniAsserter asserter) {
         Creature c1 = CreatureTest.creature("1").good().cost(50).civilization().wild().build();
         Creature c2 = CreatureTest.creature("2").cost(50).civilization().build();
         asserter
@@ -64,6 +66,8 @@ public class WarbandTest {
                         .chain(w -> Mutiny.fetch(w.creatures).map(wc -> w)), w -> {
                             assertNotNull(w.id);
                             assertEquals(2, w.creatures.size());
+                            assertEquals(0, w.creatures.get(0).position);
+                            assertEquals(1, w.creatures.get(1).position);
                             assertFalse(w.arena);
                         })
                 .execute(this::deleteAll);
@@ -71,8 +75,7 @@ public class WarbandTest {
 
     @RunOnVertxContext
     @Test
-    public void testUniqueConstraint(UniAsserter asserter) {
-        asserter = new TransactionUniAsserterInterceptor(asserter);
+    public void testUniqueConstraint(TransactionalUniAsserter asserter) {
         Creature c1 = CreatureTest.creature("1").good().cost(50).civilization().wild().build();
         Creature c2 = CreatureTest.creature("2").cost(50).civilization().build();
         asserter

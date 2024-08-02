@@ -12,17 +12,16 @@ import org.junit.jupiter.api.Test;
 import com.github.mkouba.ddmwi.User.Role;
 
 import io.quarkus.elytron.security.common.BcryptUtil;
+import io.quarkus.test.hibernate.reactive.panache.TransactionalUniAsserter;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.vertx.RunOnVertxContext;
-import io.quarkus.test.vertx.UniAsserter;
 
 @QuarkusTest
 public class UserTest {
 
     @RunOnVertxContext
     @Test
-    public void testPersist(UniAsserter asserter) {
-        asserter = new TransactionUniAsserterInterceptor(asserter);
+    public void testPersist(TransactionalUniAsserter asserter) {
         asserter.execute(() -> create("foo", "foo", Role.USER).persist())
                 .assertThat(() -> User.<User> find("username", "foo").firstResult(), u -> {
                     assertNotNull(u);
