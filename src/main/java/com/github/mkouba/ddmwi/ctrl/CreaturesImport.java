@@ -54,12 +54,20 @@ public class CreaturesImport extends Controller {
     @Produces(MediaType.TEXT_HTML)
     public Uni<RestResponse<Object>> importCreatures(FileImportForm form) {
         URI listUri = uriInfo.getRequestUriBuilder().replacePath("/creature-list").build();
-        return importCreaturesJson(form).map(v -> RestResponse.seeOther(listUri));
+        return importCreaturesJson(form)
+                .map(v -> {
+                    return RestResponse.seeOther(listUri);
+                })
+                .onFailure()
+                .recoverWithItem(
+                        t -> {
+                            return RestResponse.ok(Templates.error(t.getMessage(), false).render(), MediaType.TEXT_HTML_TYPE);
+                        });
     }
 
     Uni<Void> importCreaturesJson(FileImportForm form) {
         java.nio.file.Path filePath = form.importFile.filePath();
-        LOG.infof("Import creatures from file: %s", filePath);
+        LOG.infof("Going to import creatures from file: %s", filePath);
         return readFile(filePath).chain(str -> Panache.withTransaction(
                 () -> Creature.<Creature> find(
                         "select distinct c from Creature c left join fetch c.powers cp")
@@ -83,8 +91,12 @@ public class CreaturesImport extends Controller {
                     .findAny();
             Creature creature = existing.orElse(new Creature());
             applyJsonToEntity(json, creature);
-            all.add(creature);
+            if (existing.isEmpty()) {
+                // Only persist transient entities
+                all.add(creature);
+            }
         }
+        LOG.infof("Going to persit %s creatures from total %s", all.size(), jsonData.size());
         return Creature.persist(all);
     }
 
@@ -138,7 +150,7 @@ public class CreaturesImport extends Controller {
         }
         JsonArray powers = json.getJsonArray("powers");
         creature.powers.clear();
-        
+
         if (powers != null && !powers.isEmpty()) {
             for (Object p : powers) {
                 JsonObject powerJson = (JsonObject) p;

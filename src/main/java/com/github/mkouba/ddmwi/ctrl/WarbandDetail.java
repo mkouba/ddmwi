@@ -9,6 +9,7 @@ import org.jboss.resteasy.reactive.RestPath;
 import org.jboss.resteasy.reactive.RestQuery;
 import org.jboss.resteasy.reactive.RestResponse;
 
+import com.github.mkouba.ddmwi.CreatureView;
 import com.github.mkouba.ddmwi.Warband;
 import com.github.mkouba.ddmwi.dao.CreatureDao;
 import com.github.mkouba.ddmwi.dao.Filters;
@@ -169,21 +170,25 @@ public class WarbandDetail extends Controller {
     @WithTransaction
     @POST
     @Path("{id}/move-left/{warbandCreatureId}")
-    public Uni<RestResponse<Object>> moveLeft(@RestPath Long id, @RestPath Long warbandCreatureId, @RestForm String queryStr) {
-        URI requestUri = uriFrom(PATH + "/" + id, queryStr);
-        return warbandDao.findWarband(id).onItem().ifNotNull().invoke(w -> {
+    public Uni<TemplateInstance> moveLeft(@RestPath Long id, @RestPath Long warbandCreatureId) {
+        SortInfo sortInfo = new SortInfo(null, creatureDao.getSortOptions());
+        PageResults<CreatureView> page = PageResults.empty();
+        return warbandDao.findWarband(id).map(w -> {
             w.moveLeft(warbandCreatureId);
-        }).onItem().ifNotNull().transform(e -> RestResponse.seeOther(requestUri));
+            return Templates.warband$warbandCreatures(w, page, null, sortInfo);
+        });
     }
 
     @WithTransaction
     @POST
     @Path("{id}/move-right/{warbandCreatureId}")
-    public Uni<RestResponse<Object>> moveRight(@RestPath Long id, @RestPath Long warbandCreatureId, @RestForm String queryStr) {
-        URI requestUri = uriFrom(PATH + "/" + id, queryStr);
-        return warbandDao.findWarband(id).onItem().ifNotNull().invoke(w -> {
+    public Uni<TemplateInstance> moveRight(@RestPath Long id, @RestPath Long warbandCreatureId) {
+        SortInfo sortInfo = new SortInfo(null, creatureDao.getSortOptions());
+        PageResults<CreatureView> page = PageResults.empty();
+        return warbandDao.findWarband(id).map(w -> {
             w.moveRight(warbandCreatureId);
-        }).onItem().ifNotNull().transform(e -> RestResponse.seeOther(requestUri));
+            return Templates.warband$warbandCreatures(w, page, null, sortInfo);
+        });
     }
 
 }

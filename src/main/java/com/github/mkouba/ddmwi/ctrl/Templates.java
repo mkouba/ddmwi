@@ -24,6 +24,8 @@ class Templates {
     
     static native TemplateInstance warband(Warband warband, PageResults<? extends CreatureView> page,
             List<String> errorMessages, String query, SortInfo sortInfo);
+    
+    static native TemplateInstance warband$warbandCreatures(Warband warband, PageResults<? extends CreatureView> page, String query, SortInfo sortInfo);
 
     static native TemplateInstance creature(Creature creature, List<String> errorMessages);
 

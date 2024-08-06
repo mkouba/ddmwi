@@ -25,12 +25,12 @@ div.filter {
   margin-bottom: 1em;
 }
 
-.cardFloatLeft {
+.card-float-left {
   margin: 0 0.5rem 0 0;
   float: left;
 }
 
-.cardFloatRight {
+.card-float-right {
   margin: 0;
   float: right;
 }
@@ -87,6 +87,10 @@ p.factions {
   font-size:0.9rem;
 }
 
+.creature-name, .warband-name {
+    text-transform: uppercase;
+}
+
 .card-body {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
@@ -107,7 +111,7 @@ p.factions {
 }
 
 .card-footer {
-  font-size: 1.5em;
+  font-size: 1.3em;
   border: 0px;
 }
 
@@ -179,7 +183,7 @@ p.factions {
     border-radius: 6px;
     padding: 1rem;
     margin: auto;
-    background-image: url('/static/wood.png');
+    background-image: url('/static/wood.jpg');
 }
 
 .warband-details {
@@ -217,8 +221,14 @@ tr {
   vertical-align: middle;
 }
 
-div.col {
+div.creature-col {
     margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+.creature-index {
+    font-size: 0.8em;
+    color: silver;
 }
 
 .bg-borderlands {

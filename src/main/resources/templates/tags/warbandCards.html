@@ -12,7 +12,7 @@
     <div class="col">
     <div class="card warband-card">
             <div class="card-header">
-                <div>
+                <div class="warband-name">
                     {#if warband.name.length > 30}
                     <span title="{warband.name}">{warband.name.substring(0,30)}...</span>
                     {#else}
@@ -40,14 +40,10 @@
                       </div>
                       {/if}
                         {#if warband.creatures}
-                            <div class="mt-2" title="{warband.creatures.size} creatures used">
-                            &nbsp;<i class="fas fa-dragon"></i>&nbsp;
-                            {warband.creatures.size}{#if !warband.freestyle}/{warband.creaturesLimit}{/if}
-                            </div>
                             <ol class="creatures mt-2">
                                 {#each warband.creatures}
                                 <li>
-                                    {it.name} 
+                                    <span class="creature-name">{it.name}</span> 
                                     &nbsp;<span class="badge rounded-pill bg-secondary" title="Cost">{it.cost}</span>
                                     {#if it.isChampion}{#champion rating=it.championRating style="color:gray;" /} {/if}
                                     {#if it.isEvil}<span class="badge rounded-pill bg-dark">Evil</span>{#else if it.isGood}<span class="badge rounded-pill bg-light text-dark">Good</span>{/if}
@@ -55,8 +51,12 @@
                                 {/each}
                             </ol>
                             <div>
-                            {#factions warband.baseFactions /}
+                            {#factions factions=warband.baseFactions /}
                             </div>
+                            <div class="mt-2" title="{warband.creatures.size} creatures used">
+                                &nbsp;<i class="fas fa-dragon"></i>&nbsp;
+                                {warband.creatures.size}{#if !warband.freestyle}/{warband.creaturesLimit}{/if}
+                             </div>
                         {#else}
                             <p>No creatures.</p>
                         {/if}

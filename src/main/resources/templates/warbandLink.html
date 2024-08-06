@@ -5,9 +5,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans&display=swap" rel="stylesheet">
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/css/fontawesome/all.min.css" rel="stylesheet">
-    <link href="/css/styles.css" rel="stylesheet">
+    {#bundle /}
     <title>D&D Minis Warband Incubator - {warband.name}</title>
 </head>
 <body>
@@ -70,7 +68,7 @@
     <div class="col">
         <div class="card">
             <div class="card-header">
-                <div>
+                <div class="creature-name">
                 {#if creature.name.length > 20}
                 <span title="{creature.name}">{creature.name.substring(0,20)}...</span>
                 {#else}
@@ -148,10 +146,10 @@
                 </div>
             </div>
             <div class="card-footer text-muted">
-                 <div class="cardFloatRight">
+                 <div class="card-float-right">
                     &nbsp;<span class="badge rounded-pill bg-secondary" title="Cost">{creature.cost}</span>
                  </div>
-                 <div class="cardFloatRight">
+                 <div class="card-float-right">
                     {#champion rating=creature.championRating /}
                  </div>
             </div>

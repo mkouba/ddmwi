@@ -205,6 +205,8 @@ public class Warband extends BaseEntity {
         if (creatures == null) {
             creatures = new ArrayList<>();
             position = 0;
+        } else if (creatures.isEmpty()) {
+            position = 0;
         } else {
             position = creatures.stream().filter(WarbandCreature::hasPosition).mapToInt(WarbandCreature::getPosition).max()
                     .orElseThrow() + 1;
@@ -249,6 +251,8 @@ public class Warband extends BaseEntity {
 
     public void moveLeft(long warbandCreatureId) {
         WarbandCreature prev = null;
+        WarbandCreature moved = null;
+        int movedIdx = 0;
         for (ListIterator<WarbandCreature> it = creatures.listIterator(); it.hasNext();) {
             WarbandCreature c = it.next();
             if (c.id.equals(warbandCreatureId)) {
@@ -268,20 +272,29 @@ public class Warband extends BaseEntity {
                     }
                     c.position = prevPosition;
                     prev.position = currentPosition;
+                    moved = c;
+                    movedIdx = it.previousIndex();
                 }
                 break;
             }
             prev = c;
         }
+        if (moved != null) {
+            creatures.set(movedIdx, prev);
+            creatures.set(movedIdx - 1, moved);
+        }
     }
 
     public void moveRight(long warbandCreatureId) {
+        WarbandCreature next = null;
+        WarbandCreature moved = null;
+        int nextIdx = 0;
         for (ListIterator<WarbandCreature> it = creatures.listIterator(); it.hasNext();) {
             WarbandCreature c = it.next();
             if (c.id.equals(warbandCreatureId)) {
                 if (it.hasNext()) {
                     Integer currentPosition = c.position;
-                    WarbandCreature next = it.next();
+                    next = it.next();
                     Integer nextPosition = next.position;
                     if (nextPosition == null) {
                         if (currentPosition != null) {
@@ -296,9 +309,15 @@ public class Warband extends BaseEntity {
                     }
                     c.position = nextPosition;
                     next.position = currentPosition;
+                    moved = c;
+                    nextIdx = it.previousIndex();
                 }
                 break;
             }
+        }
+        if (moved != null) {
+            creatures.set(nextIdx, moved);
+            creatures.set(nextIdx - 1, next);
         }
     }
 

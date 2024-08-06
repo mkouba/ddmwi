@@ -82,10 +82,12 @@
     </div>
     <hr>
     {#if warband.creatures}
-    <div class="row row-cols-auto mb-2 warband-cards">
+    <div id="warband-creatures" class="row row-cols-auto mb-2 warband-cards">
+    {#fragment warbandCreatures}
         {#for creature in warband.creatures}
-            {#creatureCard warband sortInfo query page creature creatureIndex=creature_index warbandSelected=true /}
+            {#creatureCard warband sortInfo query page creature creatureIndex=creature_count warbandSelected=true /}
         {/for}
+    {/fragment}
     </div>
     {#else}
     <div class="text-center text-muted fs-3 no-creatures-text">No creatures added yet. Please select a creature below...</div>
@@ -94,7 +96,7 @@
 {/if}
 
 {#if warband.id}
-<h2>Available creatures</h2>
+<h2 class="mt-4">Available creatures</h2>
 
 {#filters sortInfo quickFilters=creature:quickFilters hxTarget="#warband-available-creatures" hxGet=warband:availableCreaturesPath(warband.id) _unisolated /}
 
