@@ -53,6 +53,11 @@ public class CreatureTest {
         CreatureBuilder(String name) {
             creature.name = name;
         }
+        
+        public CreatureBuilder id(Long id) {
+            creature.id = id;
+            return this;
+        }
 
         public CreatureBuilder good() {
             creature.alignment = Alignment.GOOD;

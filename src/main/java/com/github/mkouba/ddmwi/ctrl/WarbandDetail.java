@@ -74,18 +74,22 @@ public class WarbandDetail extends Controller {
                 });
     }
 
+    @WithTransaction
     @GET
     @Path("{id}")
     @Produces(MediaType.TEXT_HTML)
     public Uni<TemplateInstance> get(Long id, @RestQuery String q, @RestQuery int page, @RestQuery String sortBy) {
         SortInfo sortInfo = new SortInfo(sortBy, creatureDao.getSortOptions());
-        return warbandDao.findWarband(id).chain(w -> warbandDao.findWarbandCreatures(w, creatureDao.parse(q), page, sortInfo)
-                .map(pr -> Templates.warband(w, pr, List.of(), q, sortInfo))).onFailure().recoverWithItem(t -> {
-                    if (t instanceof NoResultException) {
-                        return Templates.error("Warband not found.", false);
-                    }
-                    return Templates.error();
-                });
+        return warbandDao.findWarband(id).chain(w -> {
+            w.ensurePositionsInitialized();
+            return warbandDao.findWarbandCreatures(w, creatureDao.parse(q), page, sortInfo)
+                    .map(pr -> Templates.warband(w, pr, List.of(), q, sortInfo)).onFailure().recoverWithItem(t -> {
+                        if (t instanceof NoResultException) {
+                            return Templates.error("Warband not found.", false);
+                        }
+                        return Templates.error();
+                    });
+        });
     }
 
     @WithTransaction

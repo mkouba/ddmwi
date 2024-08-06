@@ -54,9 +54,11 @@ public class CreaturePower extends BaseEntity {
 
     @TemplateEnum
     public enum PowerType {
-        ATTACK,
+        // TODO refactoring
+        // We can't change the ordering ATM because of compatibility with DB
         ABILITY,
         SPECIAL,
+        ATTACK,
         CHAMPION
     }
 }

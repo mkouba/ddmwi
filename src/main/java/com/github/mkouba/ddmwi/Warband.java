@@ -249,6 +249,18 @@ public class Warband extends BaseEntity {
         return false;
     }
 
+    public void ensurePositionsInitialized() {
+        if (!creatures.stream().allMatch(WarbandCreature::hasPosition)) {
+            int highestPosition = creatures.stream().filter(WarbandCreature::hasPosition).mapToInt(WarbandCreature::getPosition)
+                    .max().orElse(-1);
+            for (WarbandCreature warbandCreature : creatures) {
+                if (warbandCreature.position == null) {
+                    warbandCreature.position = ++highestPosition;
+                }
+            }
+        }
+    }
+
     public void moveLeft(long warbandCreatureId) {
         WarbandCreature prev = null;
         WarbandCreature moved = null;
@@ -261,7 +273,7 @@ public class Warband extends BaseEntity {
                     Integer prevPosition = prev.position;
                     if (prevPosition == null) {
                         if (currentPosition != null) {
-                            prevPosition = currentPosition - 1;
+                            prevPosition = currentPosition + 1;
                         } else {
                             // Both positions are null
                             prevPosition = 1;
@@ -298,7 +310,7 @@ public class Warband extends BaseEntity {
                     Integer nextPosition = next.position;
                     if (nextPosition == null) {
                         if (currentPosition != null) {
-                            nextPosition = currentPosition + 1;
+                            nextPosition = currentPosition - 1;
                         } else {
                             // Both positions are null
                             nextPosition = 0;
